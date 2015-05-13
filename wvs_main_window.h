@@ -17,6 +17,15 @@ public:
 
 private:
     Ui::wvs_main_window *ui;
+
+    std::string strFilename;
+    QTimer* ofTimer;
+
+private slots:
+    // trigger thread to open image
+    void OpenFileAction();
+    // thread to open image
+    void OpenFileThread();
 };
 
 #endif // WVS_MAIN_WINDOW_H
