@@ -16,6 +16,7 @@
 #include <QtGui/QGridLayout>
 #include <QtGui/QHeaderView>
 #include <QtGui/QMainWindow>
+#include <QtGui/QMenu>
 #include <QtGui/QMenuBar>
 #include <QtGui/QStatusBar>
 #include <QtGui/QToolBar>
@@ -27,11 +28,11 @@ QT_BEGIN_NAMESPACE
 class Ui_wvs_main_window
 {
 public:
-    QAction *actionOpenFile;
     QWidget *centralWidget;
     QGridLayout *gridLayout;
     GLContainer *widget;
     QMenuBar *menuBar;
+    QMenu *menuTest;
     QToolBar *mainToolBar;
     QStatusBar *statusBar;
 
@@ -40,8 +41,6 @@ public:
         if (wvs_main_window->objectName().isEmpty())
             wvs_main_window->setObjectName(QString::fromUtf8("wvs_main_window"));
         wvs_main_window->resize(1024, 768);
-        actionOpenFile = new QAction(wvs_main_window);
-        actionOpenFile->setObjectName(QString::fromUtf8("actionOpenFile"));
         centralWidget = new QWidget(wvs_main_window);
         centralWidget->setObjectName(QString::fromUtf8("centralWidget"));
         gridLayout = new QGridLayout(centralWidget);
@@ -57,6 +56,8 @@ public:
         menuBar = new QMenuBar(wvs_main_window);
         menuBar->setObjectName(QString::fromUtf8("menuBar"));
         menuBar->setGeometry(QRect(0, 0, 1024, 25));
+        menuTest = new QMenu(menuBar);
+        menuTest->setObjectName(QString::fromUtf8("menuTest"));
         wvs_main_window->setMenuBar(menuBar);
         mainToolBar = new QToolBar(wvs_main_window);
         mainToolBar->setObjectName(QString::fromUtf8("mainToolBar"));
@@ -65,7 +66,7 @@ public:
         statusBar->setObjectName(QString::fromUtf8("statusBar"));
         wvs_main_window->setStatusBar(statusBar);
 
-        mainToolBar->addAction(actionOpenFile);
+        menuBar->addAction(menuTest->menuAction());
 
         retranslateUi(wvs_main_window);
 
@@ -74,8 +75,8 @@ public:
 
     void retranslateUi(QMainWindow *wvs_main_window)
     {
-        wvs_main_window->setWindowTitle(QApplication::translate("wvs_main_window", "wvs_main_window", 0, QApplication::UnicodeUTF8));
-        actionOpenFile->setText(QApplication::translate("wvs_main_window", "Open File", 0, QApplication::UnicodeUTF8));
+        wvs_main_window->setWindowTitle(QApplication::translate("wvs_main_window", "WVS", 0, QApplication::UnicodeUTF8));
+        menuTest->setTitle(QApplication::translate("wvs_main_window", "File", 0, QApplication::UnicodeUTF8));
     } // retranslateUi
 
 };
