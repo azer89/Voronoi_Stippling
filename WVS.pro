@@ -1,13 +1,12 @@
 #-------------------------------------------------
 #
-# Project created by QtCreator 2015-05-13T15:33:48
+# Project created by QtCreator 2015-05-14T11:08:33
 #
 #-------------------------------------------------
 
-QT += core gui opengl
+QT       += core gui opengl
 
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
-
 
 TARGET = WVS
 TEMPLATE = app
@@ -26,6 +25,3 @@ HEADERS  += wvs_main_window.h \
     GLWidget.h
 
 FORMS    += wvs_main_window.ui
-
-
-
