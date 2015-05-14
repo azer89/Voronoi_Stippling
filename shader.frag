@@ -1,6 +1,5 @@
 #version 330
 
-
 in vec2 varying_uv;
 uniform float use_color;
 uniform sampler2D base_texture;

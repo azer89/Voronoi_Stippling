@@ -46,6 +46,8 @@ public:
     // destructor
     ~GLWidget();
 
+    QSize GetCanvasSize() { return QSize(_img_width, _img_height); }
+
     void SetImage(QString img);
 
     // save current buffer to image

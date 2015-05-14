@@ -2,6 +2,7 @@
 #include "stdafx.h"
 #include "GLWidget.h"
 
+// VertexData
 struct VertexData
 {
     QVector3D position;
@@ -21,6 +22,7 @@ public:
     }
 };
 
+// GLWidget
 GLWidget::GLWidget(QGLFormat format, QWidget *parent) :
     QGLWidget(format, parent),
     _isMouseDown(false),
@@ -54,10 +56,10 @@ void GLWidget::initializeGL()
     glEnable(GL_DEPTH_TEST);
 
     _shaderProgram = new QOpenGLShaderProgram();
-    if (!_shaderProgram->addShaderFromSourceFile(QOpenGLShader::Vertex, "shader.vert"))
+    if (!_shaderProgram->addShaderFromSourceFile(QOpenGLShader::Vertex, "../WVS/shader.vert"))
         { std::cerr << "Cannot load vertex shader." << std::endl; return; }
 
-    if (!_shaderProgram->addShaderFromSourceFile(QOpenGLShader::Fragment, "shader.frag"))
+    if (!_shaderProgram->addShaderFromSourceFile(QOpenGLShader::Fragment, "../WVS/shader.frag"))
         { std::cerr << "Cannot load fragment shader." << std::endl; return; }
 
     if ( !_shaderProgram->link() )
@@ -76,9 +78,6 @@ void GLWidget::initializeGL()
     }
 
     _shaderProgram->bind();
-
-    //_shaderProgram->enableAttributeArray("vert");
-    //_shaderProgram->setAttributeBuffer("vert", GL_FLOAT, 0, 3);
 
     _mvpMatrixLocation = _shaderProgram->uniformLocation("mvpMatrix");
     _colorLocation = _shaderProgram->uniformLocation("frag_color");
@@ -169,11 +168,6 @@ void GLWidget::DrawLine(MyPoint p1, MyPoint p2)
    _shaderProgram->enableAttributeArray(vertexLocation);
    _shaderProgram->setAttributeBuffer(vertexLocation, GL_FLOAT, offset, 3, sizeof(VertexData));
 
-   // Tell OpenGL programmable pipeline how to locate vertex texture coordinate data
-   //int texcoordLocation = _shaderProgram->attributeLocation("uv");
-   //_shaderProgram->enableAttributeArray(texcoordLocation);
-   //_shaderProgram->setAttributeBuffer(texcoordLocation, GL_FLOAT, offset, 2, sizeof(VertexData));
-
    glDrawArrays(GL_LINES, 0, 2);
 }
 
@@ -196,7 +190,6 @@ void GLWidget::paintGL()
                       (float)current_height + _scrollOffset.y(),
                       0.0 + _scrollOffset.y(),
                       -0.1, 0.1);
-
 
     /*
     orthoMatrix.ortho(QRect(0.0 +  _scrollOffset.x(),
@@ -304,40 +297,6 @@ void GLWidget::mouseDoubleClick(int x, int y)
 
 void GLWidget::SetImage(QString img)
 {
-    /*
-    this->Reset();
-    _imgOriginal.load(img);
-
-    // size
-    this->_img_width = _imgOriginal.width();
-    this->_img_height = _imgOriginal.height();
-
-    // calculating power-of-two (pow) size
-    int xpow = (int) std::pow(2.0, std::ceil( std::log10((double)_img_width )/std::log10(2.0) ) );
-    int ypow = (int) std::pow(2.0, std::ceil( std::log10((double)_img_height )/std::log10(2.0) ) );
-
-    xpow = my_max(xpow, ypow);	// the texture should be square too
-    xpow = my_min(xpow, 1024);	// shrink if the size is too big
-    ypow = xpow;
-
-    // transform the image to square pow size
-    _imgGL = _imgOriginal.scaled(xpow, ypow, Qt::IgnoreAspectRatio);
-    _imgGL = QGLWidget::convertToGLFormat(_imgGL);
-
-    glGenTextures(1, &_imgID);
-    glBindTexture( GL_TEXTURE_2D, _imgID );
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, _imgGL.width(), _imgGL.height(), 0, GL_RGBA, GL_UNSIGNED_BYTE, _imgGL.bits());
-
-    std::cout << "bind texture\n";
-
-    this->updateGL(); // Update ! */
-
-
-
     this->Reset();
     _imgOriginal.load(img);
 

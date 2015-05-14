@@ -18,6 +18,7 @@ wvs_main_window::~wvs_main_window()
 
 void wvs_main_window::OpenFileThread()
 {
+
     QApplication::setOverrideCursor(Qt::WaitCursor);
     QApplication::processEvents();
     //ui.statusBar->showMessage("Opening image...", 100000);
@@ -27,6 +28,8 @@ void wvs_main_window::OpenFileThread()
     // Display image
     //ui.frame->SetImage(qFilename);
     ui->widget->GetGLWidget()->SetImage(qFilename);
+    ui->widget->GetGLWidget()->repaint();
+    ui->widget->SetScrolls();
 
     std::cout << "Image loaded\n";
 
@@ -37,7 +40,7 @@ void wvs_main_window::OpenFileThread()
 void wvs_main_window::OpenFileAction()
 {
     // Get Filename
-    QString qFilename = QFileDialog::getOpenFileName(this, "");
+    QString qFilename = QFileDialog::getOpenFileName(this, "/home/azer/Desktop/");
     if(qFilename.isEmpty()) return;
     strFilename = qFilename.toStdString();
     //std::cout << strFilename << "\n";

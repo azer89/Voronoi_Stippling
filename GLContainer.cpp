@@ -48,15 +48,18 @@ void GLContainer::UpdateViewport(bool putInMiddle)
     QSize barSize = QSize(this->width() - _sWidth, this->height() - _sHeight);
 
     float zoomFactor = _glWidget->GetZoomFactor();
-    //QSize canvasSize  = glWidget->GetCanvasSize();
+    QSize canvasSize  = _glWidget->GetCanvasSize();
 
     //QSize borderLimit( 10, 10);
 
-    //int img_width =	canvasSize.width()  * zoomFactor;
-    //int img_height = canvasSize.height() * zoomFactor;
+    int img_width =	canvasSize.width()  * zoomFactor;
+    int img_height = canvasSize.height() * zoomFactor;
 
-    int img_width = 100 * zoomFactor;
-    int img_height  = 100 * zoomFactor;
+    if(img_width == 0 || img_height == 0)
+    {
+        img_width = 100 * zoomFactor;
+        img_height  = 100 * zoomFactor;
+    }
 
     float xSPos;
     float ySPos;
@@ -179,14 +182,22 @@ void GLContainer::SetScrolls()
 
     _prevZoomFactor = 1.0f;
 
+    std::cout << "SetScrolls\n";
+
     // nasty code here...
     bool shouldZoom = true;
     do
     {
         //int _w = this->width();
         //int _h = this->height();
-        //QSize imgSize = glWidget->GetCanvasSize();
-        QSize imgSize(100, 100);
+        QSize imgSize = _glWidget->GetCanvasSize();
+
+        if(imgSize.width() == 0 || imgSize.height() == 0)
+        {
+            imgSize = QSize(100, 100);
+        }
+
+        std::cout << "image size " << imgSize.width() << " - " << imgSize.height() << "\n";
         double zoomFactor = _glWidget->GetZoomFactor();
 
         if((double)this->width()  < (double)imgSize.width() * zoomFactor ||  (double)this->height() < (double)imgSize.height() *zoomFactor)
@@ -284,6 +295,11 @@ void GLContainer::wheelEvent(QWheelEvent* event)
 
 void GLContainer::keyPressEvent(QKeyEvent *event)
 {
+    if(event->key() == Qt::Key_Control)
+    {
+        this->_ctrlPressed = true;
+        QApplication::setOverrideCursor(Qt::OpenHandCursor);
+    }
     //if(event->key() == Qt::Key_C) { this->glWidget->DoClustering(); }
 
     _glWidget->updateGL();
@@ -291,7 +307,11 @@ void GLContainer::keyPressEvent(QKeyEvent *event)
 
 void GLContainer::keyReleaseEvent(QKeyEvent *event)
 {
-    if(event->key() == Qt::Key_Control) { this->_ctrlPressed = false; }
+    if(event->key() == Qt::Key_Control)
+    {
+        this->_ctrlPressed = false;
+        QApplication::restoreOverrideCursor();
+    }
 }
 
 // get renderer
