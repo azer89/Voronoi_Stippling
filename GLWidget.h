@@ -18,13 +18,26 @@ private:
     std::vector< std::vector<MyPoint> > points;
 
     /* OpenGL 3.3 */
-    QOpenGLBuffer mVertexBufferObject;
+    QOpenGLBuffer mVBO;
     QOpenGLVertexArrayObject mVertexArrayObject;
+    QOpenGLTexture* mTexture;
+    QOpenGLShaderProgram* mProgram;
+
     int mMvpMatrixLocation;
     int mColorLocation;
     QMatrix4x4 mPerspMatrix;
     QMatrix4x4 mTransformMatrix;
-    QGLShaderProgram mProgram;
+
+
+
+    // image size (does not depend on QImage)
+    int _img_width;
+    int _img_height;
+
+    // image
+    QImage _imgOriginal;
+    QImage _imgGL;
+    GLuint _imgID;
 
 public:
 
@@ -32,6 +45,8 @@ public:
     GLWidget( QGLFormat format, QWidget *parent = 0);
     // destructor
     ~GLWidget();
+
+    void SetImage(QString img);
 
     // save current buffer to image
     void SaveImage(QString filename);
@@ -77,6 +92,7 @@ protected:
 private:
     void SetColor(const QColor& col);
     void DrawLine(MyPoint p1, MyPoint p2);
+    void DrawImage();
 
     QMatrix4x4 GetCameraMatrix();
     void TranslateWorld(float x, float y, float z);

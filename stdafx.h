@@ -5,8 +5,10 @@
 // Qt OpenGL
 #include <QtOpenGL/QGLWidget>
 #include <QGLShader>
+#include <QOpenGLShaderProgram>
 #include <QGLFormat>
 #include <QGLFramebufferObject>
+#include <QOpenGLTexture>
 #include <QMatrix4x4>
 #include <QOpenGLBuffer>
 #include <QOpenGLVertexArrayObject>
