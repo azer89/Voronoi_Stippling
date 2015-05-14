@@ -109,6 +109,8 @@ void GLWidget::DrawImage()
         return;
     }
 
+    int use_color_location = _shaderProgram->uniformLocation("use_color");
+    _shaderProgram->setUniformValue(use_color_location, (GLfloat)0.0);
     _texture->bind();
 
     QVector<VertexData> vertices;
@@ -146,6 +148,9 @@ void GLWidget::DrawImage()
 
 void GLWidget::DrawLine(MyPoint p1, MyPoint p2)
 {
+    int use_color_location = _shaderProgram->uniformLocation("use_color");
+    _shaderProgram->setUniformValue(use_color_location, (GLfloat)1.0);
+    SetColor(QColor(1.0, 0.0, 0.0));
     glLineWidth(5.0);
 
     QVector<VertexData> vertices;
@@ -181,7 +186,7 @@ void GLWidget::paintGL()
     int current_width = width();
     int current_height = height();
 
-    SetColor(QColor(0.0, 0.0, 0.0));
+    //SetColor(QColor(0.0, 0.0, 0.0));
 
     // Set orthographic Matrix
     QMatrix4x4 orthoMatrix;
