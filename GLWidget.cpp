@@ -6,16 +6,29 @@ struct VertexData
 {
     QVector3D position;
     QVector2D texCoord;
+
+public:
+    VertexData(QVector3D position, QVector2D texCoord)
+    {
+        this->position = position;
+        this->texCoord = texCoord;
+    }
+
+    VertexData()
+    {
+        this->position = QVector3D();
+        this->texCoord = QVector2D();
+    }
 };
 
 GLWidget::GLWidget(QGLFormat format, QWidget *parent) :
     QGLWidget(format, parent),
     _isMouseDown(false),
     _zoomFactor(1.0),
-    mVBO(QOpenGLBuffer::VertexBuffer),
-    mVertexArrayObject(this),
-    mTexture(0),
-    mProgram(0)
+    _vbo(QOpenGLBuffer::VertexBuffer),
+    _vertexArrayObject(this),
+    _texture(0),
+    _shaderProgram(0)
 {
 #if (QT_VERSION >= QT_VERSION_CHECK(5, 1, 0))
     std::cout << "Qt version >= 5.1.0\n";
@@ -25,8 +38,8 @@ GLWidget::GLWidget(QGLFormat format, QWidget *parent) :
 
 GLWidget::~GLWidget()
 {
-    if(mTexture) delete mTexture;
-    if(mProgram) delete mProgram;
+    if(_texture) delete _texture;
+    if(_shaderProgram) delete _shaderProgram;
 }
 
 
@@ -40,35 +53,35 @@ void GLWidget::initializeGL()
     glClearColor( 0.4, 0.4, 0.4, 0.0 );
     glEnable(GL_DEPTH_TEST);
 
-    mProgram = new QOpenGLShaderProgram();
-    if (!mProgram->addShaderFromSourceFile(QOpenGLShader::Vertex, "shader.vert"))
+    _shaderProgram = new QOpenGLShaderProgram();
+    if (!_shaderProgram->addShaderFromSourceFile(QOpenGLShader::Vertex, "shader.vert"))
         { std::cerr << "Cannot load vertex shader." << std::endl; return; }
 
-    if (!mProgram->addShaderFromSourceFile(QOpenGLShader::Fragment, "shader.frag"))
+    if (!_shaderProgram->addShaderFromSourceFile(QOpenGLShader::Fragment, "shader.frag"))
         { std::cerr << "Cannot load fragment shader." << std::endl; return; }
 
-    if ( !mProgram->link() )
+    if ( !_shaderProgram->link() )
         { std::cerr << "Cannot link shaders." << std::endl; return; }
 
-    mVertexArrayObject.create();
-    mVertexArrayObject.bind();
+    _vertexArrayObject.create();
+    _vertexArrayObject.bind();
 
-    mVBO.create();
-    mVBO.setUsagePattern(QOpenGLBuffer::StaticDraw);
+    _vbo.create();
+    _vbo.setUsagePattern(QOpenGLBuffer::StaticDraw);
 
-    if (!mVBO.bind())
+    if (!_vbo.bind())
     {
         std::cerr << "could not bind vertex buffer to the context." << std::endl;
         return;
     }
 
-    mProgram->bind();
+    _shaderProgram->bind();
 
-    mProgram->enableAttributeArray("vert");
-    mProgram->setAttributeBuffer("vert", GL_FLOAT, 0, 3);
+    //_shaderProgram->enableAttributeArray("vert");
+    //_shaderProgram->setAttributeBuffer("vert", GL_FLOAT, 0, 3);
 
-    mMvpMatrixLocation = mProgram->uniformLocation("mvpMatrix");
-    mColorLocation = mProgram->uniformLocation("frag_color");
+    _mvpMatrixLocation = _shaderProgram->uniformLocation("mvpMatrix");
+    _colorLocation = _shaderProgram->uniformLocation("frag_color");
 }
 
 
@@ -85,90 +98,78 @@ void GLWidget::resizeGL(int width, int height)
 
 void GLWidget::SetColor(const QColor& col)
 {
-    mProgram->setUniformValue(mColorLocation, col.red(), col.green(), col.blue());
+    _shaderProgram->setUniformValue(_colorLocation, col.red(), col.green(), col.blue());
 }
 
 
 void GLWidget::DrawImage()
 {
-//    glActiveTexture(GL_TEXTURE0);
-//    glBindTexture(GL_TEXTURE_2D, Texture);
-//    // Set our "myTextureSampler" sampler to user Texture Unit 0
-//    glUniform1i(TextureID, 0);
-
-    /*
-    const GLfloat rectVertices[] =
+    if(_img_width == 0 && _img_height == 0)
     {
-        0.0, 0.0, 0.0,
-        _img_width, 0.0, 0.0,
-        _img_width, _img_height, 0.0,
-        0.0, _img_height, 0.0
-    };
+        return;
+    }
 
-    const GLfloat uvData[] =
-    {
-        0, 1,
-        1, 1,
-        1, 0,
-        0, 0
-    };*/
+    _texture->bind();
 
+    QVector<VertexData> vertices;
+//    vertices.append(VertexData(QVector3D(0.0,        0.0,          0.0f), QVector2D(0, 1)));
+//    vertices.append(VertexData(QVector3D(_img_width, 0.0,          0.0f), QVector2D(1, 1)));
+//    vertices.append(VertexData(QVector3D(_img_width, _img_height,  0.0f), QVector2D(1, 0)));
+//    vertices.append(VertexData(QVector3D(0.0,        _img_height,  0.0f), QVector2D(0, 0)));
+    vertices.append(VertexData(QVector3D(0.0,        0.0,          0.0f), QVector2D(0, 0)));
+    vertices.append(VertexData(QVector3D(_img_width, 0.0,          0.0f), QVector2D(1, 0)));
+    vertices.append(VertexData(QVector3D(_img_width, _img_height,  0.0f), QVector2D(1, 1)));
+    vertices.append(VertexData(QVector3D(0.0,        _img_height,  0.0f), QVector2D(0, 1)));
 
-
-
-    //mVBO.allocate(rectVertices, 12 * sizeof(float));
-    //glDrawArrays(GL_TRIANGLE_FAN, 0, 6);
-}
-
-void GLWidget::DrawLine(MyPoint p1, MyPoint p2)
-{
-    /*
-    glLineWidth(2.0);
-
-    QVector<GLfloat> vertData;
-    vertData.append(p1.x);
-    vertData.append(p1.y);
-    vertData.append(0.0);
-    //vertData.append(0.0);
-    vertData.append(p2.x);
-    vertData.append(p2.y);
-    vertData.append(0.0);
-    //vertData.append(0.0);
-
-    mVBO.create();
-    mVBO.bind();
-    mVBO.allocate(vertData.constData(), vertData.count() * sizeof(GLfloat));
-    glDrawArrays(GL_LINES, 0, 2);*/
-
-
-    glLineWidth(5.0);
-
-    VertexData vertices[] = {
-            // Vertex data for face 0
-            {QVector3D(p1.x, p1.y,  0.0f), QVector2D()},  // v0
-            {QVector3D(p2.x, p2.y,  0.0f), QVector2D()} // v1
-    };
-
-    mVBO.create();
-    mVBO.bind();
-    mVBO.allocate(vertices, 2 * sizeof(VertexData));
+    _vbo.create();
+    _vbo.bind();
+    _vbo.allocate(vertices.constData(), 4 * sizeof(VertexData));
 
     // Offset for position
    quintptr offset = 0;
 
    // Tell OpenGL programmable pipeline how to locate vertex position data
-   int vertexLocation = mProgram->attributeLocation("vert");
-   mProgram->enableAttributeArray(vertexLocation);
-   mProgram->setAttributeBuffer(vertexLocation, GL_FLOAT, offset, 3, sizeof(VertexData));
+   int vertexLocation = _shaderProgram->attributeLocation("vert");
+   _shaderProgram->enableAttributeArray(vertexLocation);
+   _shaderProgram->setAttributeBuffer(vertexLocation, GL_FLOAT, offset, 3, sizeof(VertexData));
+
+   offset += sizeof(QVector3D);
 
    // Tell OpenGL programmable pipeline how to locate vertex texture coordinate data
-   int texcoordLocation = mProgram->attributeLocation("uv");
-   mProgram->enableAttributeArray(texcoordLocation);
-   mProgram->setAttributeBuffer(texcoordLocation, GL_FLOAT, offset, 2, sizeof(VertexData));
+   int texcoordLocation = _shaderProgram->attributeLocation("uv");
+   _shaderProgram->enableAttributeArray(texcoordLocation);
+   _shaderProgram->setAttributeBuffer(texcoordLocation, GL_FLOAT, offset, 2, sizeof(VertexData));
+
+   glDrawArrays(GL_TRIANGLE_FAN, 0, 4);
+
+}
+
+void GLWidget::DrawLine(MyPoint p1, MyPoint p2)
+{
+    glLineWidth(5.0);
+
+    QVector<VertexData> vertices;
+    vertices.append(VertexData(QVector3D(p1.x, p1.y,  0.0f), QVector2D()));
+    vertices.append(VertexData(QVector3D(p2.x, p2.y,  0.0f), QVector2D()));
+
+    _vbo.create();
+    _vbo.bind();
+    _vbo.allocate(vertices.constData(), 2 * sizeof(VertexData));
+
+    // Offset for position
+   quintptr offset = 0;
+
+   // Tell OpenGL programmable pipeline how to locate vertex position data
+   int vertexLocation = _shaderProgram->attributeLocation("vert");
+   _shaderProgram->enableAttributeArray(vertexLocation);
+   _shaderProgram->setAttributeBuffer(vertexLocation, GL_FLOAT, offset, 3, sizeof(VertexData));
+
+   // Tell OpenGL programmable pipeline how to locate vertex texture coordinate data
+   //int texcoordLocation = _shaderProgram->attributeLocation("uv");
+   //_shaderProgram->enableAttributeArray(texcoordLocation);
+   //_shaderProgram->setAttributeBuffer(texcoordLocation, GL_FLOAT, offset, 2, sizeof(VertexData));
 
    glDrawArrays(GL_LINES, 0, 2);
-   // Draw cube geometry using indices from VBO 1
-   //glDrawElements(GL_LINES, 2, GL_UNSIGNED_SHORT, 0);
 }
 
 void GLWidget::paintGL()
@@ -205,22 +206,22 @@ void GLWidget::paintGL()
     transformMatrix.scale(_zoomFactor);
 
     // Bind buffer object
-    mProgram->setUniformValue(mMvpMatrixLocation, orthoMatrix * transformMatrix);
+    _shaderProgram->setUniformValue(_mvpMatrixLocation, orthoMatrix * transformMatrix);
 
-    if(points.size() > 0)
+    if(_points.size() > 0)
     {
-        for(size_t a = 0; a < points.size(); a++)
+        for(size_t a = 0; a < _points.size(); a++)
         {
-            for(size_t b = 0; b < points[a].size() - 1; b++)
-                { DrawLine(points[a][b], points[a][b+1]); }
+            for(size_t b = 0; b < _points[a].size() - 1; b++)
+                { DrawLine(_points[a][b], _points[a][b+1]); }
         }
 
     }
 
-    if(tempPoints.size() > 2)
+    if(_tempPoints.size() > 2)
     {
-        for(size_t a = 0; a < tempPoints.size() -1 ; a++)
-            { DrawLine(tempPoints[a], tempPoints[a+1]); }
+        for(size_t a = 0; a < _tempPoints.size() -1 ; a++)
+            { DrawLine(_tempPoints[a], _tempPoints[a+1]); }
     }
 
     // draw the input image
@@ -240,7 +241,7 @@ void GLWidget::mousePressEvent(int x, int y)
     dy /= _zoomFactor;
 
 
-    tempPoints.push_back(MyPoint(dx, dy));
+    _tempPoints.push_back(MyPoint(dx, dy));
 
     this->repaint();
 }
@@ -257,7 +258,7 @@ void GLWidget::mouseMoveEvent(int x, int y)
 
     if(_isMouseDown)
     {
-        tempPoints.push_back(MyPoint(dx, dy));
+        _tempPoints.push_back(MyPoint(dx, dy));
         this->repaint();
     }
 }
@@ -273,16 +274,16 @@ void GLWidget::mouseReleaseEvent(int x, int y)
     double dy = y + _scrollOffset.y();
     dy /= _zoomFactor;
 
-    if(tempPoints.size() >= 2)
+    if(_tempPoints.size() >= 2)
     {
-        tempPoints.push_back(MyPoint(dx, dy));
+        _tempPoints.push_back(MyPoint(dx, dy));
         std::vector<MyPoint> tempPoints2;
-        for(size_t a = 0; a < tempPoints.size(); a++)
+        for(size_t a = 0; a < _tempPoints.size(); a++)
         {
-            tempPoints2.push_back(tempPoints[a]);
+            tempPoints2.push_back(_tempPoints[a]);
         }
-        points.push_back(tempPoints2);
-        tempPoints.clear();
+        _points.push_back(tempPoints2);
+        _tempPoints.clear();
     }
     this->repaint();
 }
@@ -298,6 +299,7 @@ void GLWidget::mouseDoubleClick(int x, int y)
 
 void GLWidget::SetImage(QString img)
 {
+    /*
     this->Reset();
     _imgOriginal.load(img);
 
@@ -327,7 +329,23 @@ void GLWidget::SetImage(QString img)
 
     std::cout << "bind texture\n";
 
-    this->updateGL(); // Update !
+    this->updateGL(); // Update ! */
+
+
+
+    this->Reset();
+    _imgOriginal.load(img);
+
+    // size
+    this->_img_width = _imgOriginal.width();
+    this->_img_height = _imgOriginal.height();
+
+    _texture = new QOpenGLTexture(_imgOriginal);
+    _texture->setMinificationFilter(QOpenGLTexture::Nearest);
+    _texture->setMagnificationFilter(QOpenGLTexture::Linear);
+
+    _shaderProgram->setAttributeValue("base_texture", _texture->textureId());
+
 }
 
 // Save image to file
@@ -351,22 +369,22 @@ QMatrix4x4 GLWidget::GetCameraMatrix()
 
     vMatrix.lookAt(cameraPosition, QVector3D(0, 0, 0), cameraUpDirection);
 
-    return mPerspMatrix * vMatrix * mTransformMatrix;
+    return _perspMatrix * vMatrix * _transformMatrix;
 }
 
 void GLWidget::TranslateWorld(float x, float y, float z) {
     // Todo: Ask if we want to keep this.
-    mTransformMatrix.translate(x, y, z);
+    _transformMatrix.translate(x, y, z);
 }
 
 void GLWidget::RotateWorld(float x, float y, float z) {
     // Todo: Ask if we want to keep this.
-    mTransformMatrix.rotate(x, y, z);
+    _transformMatrix.rotate(x, y, z);
 }
 
 void GLWidget::ScaleWorld(float x, float y, float z) {
     // Todo: Ask if we want to keep this.
-    mTransformMatrix.scale(x, y, z);
+    _transformMatrix.scale(x, y, z);
 }
 
 void GLWidget::HorizontalScroll(int val) { _scrollOffset.setX(val); }

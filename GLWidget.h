@@ -14,19 +14,19 @@ private:
     float   _zoomFactor;
     QPoint  _scrollOffset;
 
-    std::vector<MyPoint> tempPoints;
-    std::vector< std::vector<MyPoint> > points;
+    std::vector<MyPoint> _tempPoints;
+    std::vector< std::vector<MyPoint> > _points;
 
     /* OpenGL 3.3 */
-    QOpenGLBuffer mVBO;
-    QOpenGLVertexArrayObject mVertexArrayObject;
-    QOpenGLTexture* mTexture;
-    QOpenGLShaderProgram* mProgram;
+    QOpenGLBuffer _vbo;
+    QOpenGLVertexArrayObject _vertexArrayObject;
+    QOpenGLTexture* _texture;
+    QOpenGLShaderProgram* _shaderProgram;
 
-    int mMvpMatrixLocation;
-    int mColorLocation;
-    QMatrix4x4 mPerspMatrix;
-    QMatrix4x4 mTransformMatrix;
+    int _mvpMatrixLocation;
+    int _colorLocation;
+    QMatrix4x4 _perspMatrix;
+    QMatrix4x4 _transformMatrix;
 
 
 
@@ -36,8 +36,8 @@ private:
 
     // image
     QImage _imgOriginal;
-    QImage _imgGL;
-    GLuint _imgID;
+    //QImage _imgGL;
+    //GLuint _imgID;
 
 public:
 
