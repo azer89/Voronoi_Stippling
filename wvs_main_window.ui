@@ -11,7 +11,7 @@
    </rect>
   </property>
   <property name="windowTitle">
-   <string>wvs_main_window</string>
+   <string>WVS</string>
   </property>
   <widget class="QWidget" name="centralWidget">
    <layout class="QGridLayout" name="gridLayout">
@@ -29,6 +29,7 @@
      <height>25</height>
     </rect>
    </property>
+<<<<<<< HEAD
    <widget class="QMenu" name="menuFIle">
     <property name="title">
      <string>File</string>
@@ -36,6 +37,14 @@
     <addaction name="actionOpen"/>
    </widget>
    <addaction name="menuFIle"/>
+=======
+   <widget class="QMenu" name="menuTest">
+    <property name="title">
+     <string>File</string>
+    </property>
+   </widget>
+   <addaction name="menuTest"/>
+>>>>>>> 47eda7be3315b81d5ab46d3c230d0870a06bc503
   </widget>
   <widget class="QToolBar" name="mainToolBar">
    <attribute name="toolBarArea">
