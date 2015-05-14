@@ -17,12 +17,6 @@ public:
 
 private:
     Ui::wvs_main_window *ui;
-
-<<<<<<< HEAD
-
-private:
-=======
->>>>>>> 47eda7be3315b81d5ab46d3c230d0870a06bc503
     std::string strFilename;
     QTimer* ofTimer;
 

@@ -29,22 +29,12 @@
      <height>25</height>
     </rect>
    </property>
-<<<<<<< HEAD
-   <widget class="QMenu" name="menuFIle">
-    <property name="title">
-     <string>File</string>
-    </property>
-    <addaction name="actionOpen"/>
-   </widget>
-   <addaction name="menuFIle"/>
-=======
    <widget class="QMenu" name="menuTest">
     <property name="title">
      <string>File</string>
     </property>
    </widget>
    <addaction name="menuTest"/>
->>>>>>> 47eda7be3315b81d5ab46d3c230d0870a06bc503
   </widget>
   <widget class="QToolBar" name="mainToolBar">
    <attribute name="toolBarArea">
@@ -55,11 +45,6 @@
    </attribute>
   </widget>
   <widget class="QStatusBar" name="statusBar"/>
-  <action name="actionOpen">
-   <property name="text">
-    <string>Open</string>
-   </property>
-  </action>
  </widget>
  <layoutdefault spacing="6" margin="11"/>
  <customwidgets>
