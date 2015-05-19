@@ -34,6 +34,7 @@
      <string>File</string>
     </property>
     <addaction name="actionOpen"/>
+    <addaction name="actionSave_as_an_svg_file"/>
    </widget>
    <addaction name="menuFile"/>
   </widget>
@@ -49,6 +50,11 @@
   <action name="actionOpen">
    <property name="text">
     <string>Open</string>
+   </property>
+  </action>
+  <action name="actionSave_as_an_svg_file">
+   <property name="text">
+    <string>Save as an svg file</string>
    </property>
   </action>
  </widget>

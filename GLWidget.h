@@ -4,6 +4,8 @@
 #include "stdafx.h"
 
 #include "MyPoint.h"
+#include "RejectionSampling.h"
+//#include "SvgPainter.h"
 
 class GLWidget : public QGLWidget
 {
@@ -28,8 +30,6 @@ private:
     QMatrix4x4 _perspMatrix;
     QMatrix4x4 _transformMatrix;
 
-
-
     // image size (does not depend on QImage)
     int _img_width;
     int _img_height;
@@ -38,6 +38,15 @@ private:
     QImage _imgOriginal;
     //QImage _imgGL;
     //GLuint _imgID;
+
+    // rejection sampling
+    RejectionSampling* _rSampling;
+    std::vector<MyPoint> _initialPoints;
+    int _numSample;
+    std::vector<QColor> _coneColors;
+
+    // Svg
+    //SvgPainter* _svgPainter;
 
 public:
 
@@ -49,6 +58,8 @@ public:
     QSize GetCanvasSize() { return QSize(_img_width, _img_height); }
 
     void SetImage(QString img);
+
+    QImage LoadAsGrayscale(QString img);
 
     // save current buffer to image
     void SaveImage(QString filename);
@@ -81,6 +92,8 @@ public:
     // reset everything
     void Reset();
 
+    void SaveToSvg();
+
 protected:
     // qt event
     bool event( QEvent * event );
@@ -95,11 +108,17 @@ private:
     void SetColor(const QColor& col);
     void DrawLine(MyPoint p1, MyPoint p2);
     void DrawImage();
+    void DrawPoints();
+    void DrawCones();
+    //void DrawCones(int xInit, int yInit);
 
     QMatrix4x4 GetCameraMatrix();
     void TranslateWorld(float x, float y, float z);
     void RotateWorld(float x, float y, float z);
     void ScaleWorld(float x, float y, float z);
+
+    std::vector<float> GetGrayValues();
+    void GenerateConeColors();
 
 };
 

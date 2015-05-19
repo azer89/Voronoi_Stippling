@@ -168,7 +168,7 @@ bool GLContainer::event(QEvent * event)
 
     if(event->type() == QEvent::Resize)
     {
-        std::cout << "resize\n";
+        //std::cout << "resize\n";
     }
 
     bool evResult = QAbstractScrollArea::event(event);

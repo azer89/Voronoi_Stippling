@@ -27,5 +27,7 @@ private slots:
     // thread to open image
     void OpenFileThread();
 
+    void SaveSVG();
+
 };
 #endif // WVS_MAIN_WINDOW_H

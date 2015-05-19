@@ -4,7 +4,7 @@
 #
 #-------------------------------------------------
 
-QT       += core gui opengl
+QT       += core gui opengl svg
 
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
@@ -16,12 +16,18 @@ SOURCES += main.cpp\
         wvs_main_window.cpp \
     GLWidget.cpp \
     GLContainer.cpp \
-    stdafx.cpp
+    stdafx.cpp \
+    RejectionSampling.cpp
 
 HEADERS  += wvs_main_window.h \
     GLContainer.h \
     MyPoint.h \
     stdafx.h \
-    GLWidget.h
+    GLWidget.h \
+    RejectionSampling.h
 
 FORMS    += wvs_main_window.ui
+
+LIBS += -lglut -lGL -lGLU
+
+QMAKE_CXXFLAGS += -std=gnu++1y

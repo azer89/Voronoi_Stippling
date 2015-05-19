@@ -12,6 +12,7 @@
 #include <QMatrix4x4>
 #include <QOpenGLBuffer>
 #include <QOpenGLVertexArrayObject>
+#include <QSvgGenerator>
 
 #include <QtWidgets/QApplication>
 #include <QtWidgets/QMainWindow>
