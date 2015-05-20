@@ -32,7 +32,7 @@ std::vector<MyPoint> RejectionSampling::GeneratePoints(std::vector<float> grayVa
     sampler<T> sample(keys, grayValues);
 
     std::map<T, size_t> hist;
-    for (size_t n = 0; n < 10000; ++n)
+    for (size_t n = 0; n < numPt; ++n)
     {
         T num = sample.generateRandom();
         hist[num]++;

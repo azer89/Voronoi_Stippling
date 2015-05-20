@@ -31,9 +31,6 @@ public:
         this->texCoord = QVector2D();
         this->color = QVector3D();
     }
-
-    //glutSolidCone((GLdouble)1, (GLdouble)2, (GLint)50, (GLint)5);
-    //glutSolidCone( 1, 1, 1, 1 );
 };
 
 // GLWidget
@@ -41,13 +38,15 @@ GLWidget::GLWidget(QGLFormat format, QWidget *parent) :
     QGLWidget(format, parent),
     _isMouseDown(false),
     _zoomFactor(1.0),
-    _vbo(QOpenGLBuffer::VertexBuffer),
-    _vertexArrayObject(this),
+    //_vertexArrayObject(new QOpenGLVertexArrayObject( this )),
     _texture(0),
     _shaderProgram(0),
     _rSampling(0),
-    _numSample(10000)
-    //_svgPainter(0)
+
+    _numSample(10000),
+    _coneSlice (32),
+    _verticesPerCone (34) // _coneSlice + 2
+
 {
 #if (QT_VERSION >= QT_VERSION_CHECK(5, 1, 0))
     std::cout << "Qt version >= 5.1.0\n";
@@ -84,17 +83,15 @@ void GLWidget::initializeGL()
     if ( !_shaderProgram->link() )
         { std::cerr << "Cannot link shaders." << std::endl; return; }
 
-    _vertexArrayObject.create();
-    _vertexArrayObject.bind();
-
-    _vbo.create();
-    _vbo.setUsagePattern(QOpenGLBuffer::StaticDraw);
-
-    if (!_vbo.bind())
-    {
-        std::cerr << "could not bind vertex buffer to the context." << std::endl;
-        return;
-    }
+    //_vertexArrayObject.create();
+    //_vertexArrayObject.bind();
+    //_vbo.create();
+    //_vbo.setUsagePattern(QOpenGLBuffer::StaticDraw);
+    //if (!_vbo.bind())
+    //{
+    //    std::cerr << "could not bind vertex buffer to the context." << std::endl;
+    //    return;
+    //}
 
     _shaderProgram->bind();
 
@@ -104,8 +101,6 @@ void GLWidget::initializeGL()
     // sampling
     _rSampling = new RejectionSampling();
 
-    // svg
-    //_svgPainter = new SvgPainter();
 }
 
 
@@ -127,7 +122,7 @@ void GLWidget::SetColor(const QColor& col)
 
 
 
-void GLWidget::DrawImage()
+void GLWidget::PaintImage()
 {
     if(_img_width == 0 && _img_height == 0)
     {
@@ -138,6 +133,7 @@ void GLWidget::DrawImage()
     _shaderProgram->setUniformValue(use_color_location, (GLfloat)0.0);
     _texture->bind();
 
+    /*
     QVector<VertexData> vertices;
     vertices.append(VertexData(QVector3D(0.0,        0.0,          0.0f), QVector2D(0, 0)));
     vertices.append(VertexData(QVector3D(_img_width, 0.0,          0.0f), QVector2D(1, 0)));
@@ -162,27 +158,25 @@ void GLWidget::DrawImage()
    int texcoordLocation = _shaderProgram->attributeLocation("uv");
    _shaderProgram->enableAttributeArray(texcoordLocation);
    _shaderProgram->setAttributeBuffer(texcoordLocation, GL_FLOAT, offset, 2, sizeof(VertexData));
+   */
 
+   _imageVao.bind();
    glDrawArrays(GL_TRIANGLE_FAN, 0, 4);
+   _imageVao.bind();
 
 }
 
-void GLWidget::DrawCones()
+void GLWidget::PaintCones()
 {
-
-
-
     if(_img_width == 0 && _img_height == 0)
     {
         return;
     }
 
-
     int use_color_location = _shaderProgram->uniformLocation("use_color");
     _shaderProgram->setUniformValue(use_color_location, (GLfloat)1.0);
-    //SetColor(QColor(0.0, 1.0, 0.0));
 
-
+    /*
     for(size_t iter = 0; iter < _initialPoints.size(); iter++)
     {
         QVector<VertexData> vertices;
@@ -191,11 +185,9 @@ void GLWidget::DrawCones()
         int yCenter = _initialPoints[iter].y;
         float radius = 50;
         int slice = 16;
-        //bool changeColor = false;
 
         QColor col = _coneColors[iter];
         QVector3D vecCol = QVector3D((float)col.red() / 255.0, (float)col.green() / 255.0, (float)col.blue() / 255.0);
-        //SetColor(QColor(col.red(), col.green(), col.blue()));
 
         vertices.append(VertexData(QVector3D(xCenter, yCenter,  10.0f), QVector2D(), vecCol));
         for(float a = 0.0; a < M_PI * 2.0; a += (M_PI * 2.0 / (float)slice))
@@ -208,7 +200,6 @@ void GLWidget::DrawCones()
         float xPt = xCenter + radius * sin(M_PI * 2.0);
         float yPt = yCenter + radius * cos(M_PI * 2.0);
         vertices.append(VertexData(QVector3D(xPt, yPt,  -10), QVector2D(), vecCol));
-
 
         _vbo.create();
         _vbo.bind();
@@ -226,13 +217,24 @@ void GLWidget::DrawCones()
         _shaderProgram->enableAttributeArray(_colorLocation);
         _shaderProgram->setAttributeBuffer(_colorLocation, GL_FLOAT, offset, 3, sizeof(VertexData));
 
+
         glDrawArrays(GL_TRIANGLE_FAN, 0, vertices.size());
     }
+    */
 
+    //_conesVao.bind();
+    //glDrawArrays(GL_TRIANGLE_FAN, 0, vertices.size());
+    //_conesVao.release();
 
+    _conesVao.bind();
+    for(size_t a = 0; a < _initialPoints.size(); a++)
+    {
+        glDrawArrays(GL_TRIANGLE_FAN, a * _verticesPerCone, _verticesPerCone);
+    }
+    _conesVao.release();
 }
 
-void GLWidget::DrawPoints()
+void GLWidget::PaintPoints()
 {
     if(_img_width == 0 && _img_height == 0)
     {
@@ -245,6 +247,7 @@ void GLWidget::DrawPoints()
     _shaderProgram->setUniformValue(use_color_location, (GLfloat)1.0);
     //SetColor(QColor(255, 0, 0));
 
+    /*
     QVector<VertexData> vertices;
 
     for(size_t a = 0; a < _initialPoints.size(); a++)
@@ -252,10 +255,6 @@ void GLWidget::DrawPoints()
         int xPt = _initialPoints[a].x;
         int yPt = _initialPoints[a].y;
 
-        /*
-        int rCol = a % 255;
-        int gCol = (a >> 8) % 255;
-        int bCol = (a >> 16) % 255;*/
         float rCol = rand() % 255;
         float gCol = rand() % 255;
         float bCol = rand() % 255;
@@ -278,12 +277,15 @@ void GLWidget::DrawPoints()
 
    _shaderProgram->enableAttributeArray(_colorLocation);
    _shaderProgram->setAttributeBuffer(_colorLocation, GL_FLOAT, offset, 3, sizeof(VertexData));
-
-   glDrawArrays(GL_POINTS, 0, _initialPoints.size());
+   */
+    _pointsVao.bind();
+    glDrawArrays(GL_POINTS, 0, _initialPoints.size());
+    _pointsVao.release();
 }
 
-void GLWidget::DrawLine(MyPoint p1, MyPoint p2)
+void GLWidget::PaintLine(MyPoint p1, MyPoint p2)
 {
+    /*
     int use_color_location = _shaderProgram->uniformLocation("use_color");
     _shaderProgram->setUniformValue(use_color_location, (GLfloat)1.0);
     //SetColor(QColor(255, 0, 0));
@@ -312,6 +314,7 @@ void GLWidget::DrawLine(MyPoint p1, MyPoint p2)
    _shaderProgram->setAttributeBuffer(_colorLocation, GL_FLOAT, offset, 3, sizeof(VertexData));
 
    glDrawArrays(GL_LINES, 0, 2);
+   */
 }
 
 void GLWidget::paintGL()
@@ -323,31 +326,15 @@ void GLWidget::paintGL()
     int current_width = width();
     int current_height = height();
 
-    //SetColor(QColor(0.0, 0.0, 0.0));
-
     // Set orthographic Matrix
     QMatrix4x4 orthoMatrix;
 
-    /*
-    orthoMatrix.ortho(0.0 +  _scrollOffset.x(),
-                      (float)current_width +  _scrollOffset.x(),
-                      (float)current_height + _scrollOffset.y(),
-                      0.0 + _scrollOffset.y(),
-                      -0.1, 0.1);
-                      */
 
     orthoMatrix.ortho(0.0 +  _scrollOffset.x(),
                       (float)current_width +  _scrollOffset.x(),
                       (float)current_height + _scrollOffset.y(),
                       0.0 + _scrollOffset.y(),
                       -100, 100);
-
-    /*
-    orthoMatrix.ortho(QRect(0.0 +  _scrollOffset.x(),
-                            (float)current_width +  _scrollOffset.x(),
-                            (float)current_height + _scrollOffset.y(),
-                            0.0 + _scrollOffset.y()));
-    */
 
     // Translate the view to the middle
     QMatrix4x4 transformMatrix;
@@ -357,12 +344,13 @@ void GLWidget::paintGL()
     // Bind buffer object
     _shaderProgram->setUniformValue(_mvpMatrixLocation, orthoMatrix * transformMatrix);
 
+    /*
     if(_points.size() > 0)
     {
         for(size_t a = 0; a < _points.size(); a++)
         {
             for(size_t b = 0; b < _points[a].size() - 1; b++)
-                { DrawLine(_points[a][b], _points[a][b+1]); }
+                { PaintLine(_points[a][b], _points[a][b+1]); }
         }
 
     }
@@ -370,15 +358,16 @@ void GLWidget::paintGL()
     if(_tempPoints.size() > 2)
     {
         for(size_t a = 0; a < _tempPoints.size() -1 ; a++)
-            { DrawLine(_tempPoints[a], _tempPoints[a+1]); }
+            { PaintLine(_tempPoints[a], _tempPoints[a+1]); }
     }
+    */
 
-    DrawCones();
+    PaintCones();
 
-    DrawPoints();
+    PaintPoints();
 
     // draw the input image
-    DrawImage();
+    //PaintImage();
 
     // draw initial points
 
@@ -401,8 +390,6 @@ std::vector<float> GLWidget::GetGrayValues()
 // Mouse is pressed
 void GLWidget::mousePressEvent(int x, int y)
 {
-
-
     _isMouseDown = true;
 
     double dx = x + _scrollOffset.x();
@@ -410,15 +397,6 @@ void GLWidget::mousePressEvent(int x, int y)
 
     double dy = y + _scrollOffset.y();
     dy /= _zoomFactor;
-
-    // testing
-    /*
-    if(_img_width != 0 && _img_height != 0)
-    {
-        int grayValue = qGray(_imgOriginal.pixel(dx, dy));
-        std::cout << grayValue << "\n";
-    }
-    */
 
     _tempPoints.push_back(MyPoint(dx, dy));
 
@@ -476,10 +454,10 @@ void GLWidget::mouseDoubleClick(int x, int y)
     dy /= _zoomFactor;
 }
 
-void GLWidget::SetImage(QString img)
+void GLWidget::
+SetImage(QString img)
 {
-    // error, need a square image
-
+    // fixme, need a square image
     this->Reset();
     //_imgOriginal.load(img);
     _imgOriginal = LoadAsGrayscale(img);
@@ -496,20 +474,142 @@ void GLWidget::SetImage(QString img)
 
     _shaderProgram->setAttributeValue("base_texture", _texture->textureId());
 
-    // calculate random sampling    
+    // calculate random sampling
     _initialPoints.clear();
     _initialPoints = _rSampling->GeneratePoints(GetGrayValues(), _numSample, _img_width, _img_height);
     std::cout << "_initialPoints.size() equals to " << _initialPoints.size() << "\n";
-
 
     //for(size_t a = 0; a < _initialPoints.size(); a++)
     //{
     //    std:: cout << "(" << _initialPoints[a].x << ", " << _initialPoints[a].y << ")\n";
     //}
+
+    // ~~~ generate index colors ~~~
     GenerateConeColors();
 
+    // ~~~ create vao for the input image ~~~
+    _imageVao.create();
+    _imageVao.bind();
 
+    QVector<VertexData> imageVertices;
+    imageVertices.append(VertexData(QVector3D(0.0,        0.0,          0.0f), QVector2D(0, 0)));
+    imageVertices.append(VertexData(QVector3D(_img_width, 0.0,          0.0f), QVector2D(1, 0)));
+    imageVertices.append(VertexData(QVector3D(_img_width, _img_height,  0.0f), QVector2D(1, 1)));
+    imageVertices.append(VertexData(QVector3D(0.0,        _img_height,  0.0f), QVector2D(0, 1)));
 
+    _imageVbo.create();
+    _imageVbo.bind();
+    _imageVbo.allocate(imageVertices.data(), 4 * sizeof(VertexData));
+
+    // Offset for position
+    quintptr offset = 0;
+
+    // vertex
+    int vertexLocation = _shaderProgram->attributeLocation("vert");
+    _shaderProgram->enableAttributeArray(vertexLocation);
+    _shaderProgram->setAttributeBuffer(vertexLocation, GL_FLOAT, offset, 3, sizeof(VertexData));
+
+    offset += sizeof(QVector3D);
+
+    // uv
+    int texcoordLocation = _shaderProgram->attributeLocation("uv");
+    _shaderProgram->enableAttributeArray(texcoordLocation);
+    _shaderProgram->setAttributeBuffer(texcoordLocation, GL_FLOAT, offset, 2, sizeof(VertexData));
+
+    _imageVao.release();
+
+    // ~~~ create vao for the points ~~~
+    // fixme: it's static
+    _pointsVao.create();
+    _pointsVao.bind();
+
+    QVector<VertexData> pointsVertices;
+
+    for(size_t a = 0; a < _initialPoints.size(); a++)
+    {
+        int xPt = _initialPoints[a].x;
+        int yPt = _initialPoints[a].y;
+
+        float rCol = rand() % 255;
+        float gCol = rand() % 255;
+        float bCol = rand() % 255;
+
+        pointsVertices.append(VertexData(QVector3D(xPt, yPt,  15.0f), QVector2D(), QVector3D(rCol / 255.0, gCol / 255.0, bCol / 255.0)));
+    }
+
+    _pointsVbo.create();
+    _pointsVbo.bind();
+    _pointsVbo.allocate(pointsVertices.data(), _initialPoints.size() * sizeof(VertexData));
+
+    // reuse the variable
+    offset = 0;
+
+    //int vertexLocation = _shaderProgram->attributeLocation("vert");
+    _shaderProgram->enableAttributeArray(vertexLocation);
+    _shaderProgram->setAttributeBuffer(vertexLocation, GL_FLOAT, 0, 3, sizeof(VertexData));
+
+    offset += sizeof(QVector3D);
+    offset += sizeof(QVector2D);
+
+    _shaderProgram->enableAttributeArray(_colorLocation);
+    _shaderProgram->setAttributeBuffer(_colorLocation, GL_FLOAT, offset, 3, sizeof(VertexData));
+
+    _pointsVao.release();
+
+    // ~~~ create vao for the cones ~~~
+    // fixme: it's static
+    _conesVao.create();
+    _conesVao.bind();
+
+    QVector<VertexData> conesVertices;
+    for(size_t iter = 0; iter < _initialPoints.size(); iter++)
+    {
+
+        int xCenter = _initialPoints[iter].x;
+        int yCenter = _initialPoints[iter].y;
+        float radius = 50;
+        //int slice = 16;
+
+        QColor col = _coneColors[iter];
+        QVector3D vecCol = QVector3D((float)col.red() / 255.0, (float)col.green() / 255.0, (float)col.blue() / 255.0);
+        //float rCol = rand() % 255;
+        //float gCol = rand() % 255;
+        //float bCol = rand() % 255;
+        //QVector3D vecCol = QVector3D(rCol / 255.0, gCol / 255.0, bCol / 255.0);
+
+        conesVertices.append(VertexData(QVector3D(xCenter, yCenter,  10.0f), QVector2D(), vecCol));
+        float addValue = (M_PI * 2.0 / (float)_coneSlice);
+        for(float a = 0.0; a < M_PI * 2.0; a += addValue)
+        {
+            float xPt = xCenter + radius * sin(a);
+            float yPt = yCenter + radius * cos(a);
+            conesVertices.append(VertexData(QVector3D(xPt, yPt,  -10), QVector2D(), vecCol));
+        }
+
+        float xPt = xCenter + radius * sin(M_PI * 2.0);
+        float yPt = yCenter + radius * cos(M_PI * 2.0);
+        conesVertices.append(VertexData(QVector3D(xPt, yPt,  -10), QVector2D(), vecCol));
+        //glDrawArrays(GL_TRIANGLE_FAN, 0, vertices.size());
+    }
+
+    _conesVbo.create();
+    _conesVbo.bind();
+    _conesVbo.allocate(conesVertices.data(), conesVertices.size() * sizeof(VertexData));
+
+    // reset offset
+    offset = 0;
+
+    //int vertexLocation = _shaderProgram->attributeLocation("vert");
+    _shaderProgram->enableAttributeArray(vertexLocation);
+    _shaderProgram->setAttributeBuffer(vertexLocation, GL_FLOAT, offset, 3, sizeof(VertexData));
+
+    offset += sizeof(QVector3D);
+    offset += sizeof(QVector2D);
+
+    _shaderProgram->enableAttributeArray(_colorLocation);
+    _shaderProgram->setAttributeBuffer(_colorLocation, GL_FLOAT, offset, 3, sizeof(VertexData));
+
+    _conesVao.release();
 }
 
 QImage GLWidget::LoadAsGrayscale(QString img)

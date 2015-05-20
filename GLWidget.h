@@ -2,10 +2,8 @@
 #define GLWIDGET_H
 
 #include "stdafx.h"
-
 #include "MyPoint.h"
 #include "RejectionSampling.h"
-//#include "SvgPainter.h"
 
 class GLWidget : public QGLWidget
 {
@@ -20,10 +18,24 @@ private:
     std::vector< std::vector<MyPoint> > _points;
 
     /* OpenGL 3.3 */
-    QOpenGLBuffer _vbo;
-    QOpenGLVertexArrayObject _vertexArrayObject;
+    //QOpenGLBuffer _vbo;
+    //QOpenGLVertexArrayObject _vertexArrayObject;
     QOpenGLTexture* _texture;
     QOpenGLShaderProgram* _shaderProgram;
+
+    // Image
+    QOpenGLBuffer _imageVbo;
+    QOpenGLVertexArrayObject _imageVao;
+
+    // points
+    QOpenGLBuffer _pointsVbo;
+    QOpenGLVertexArrayObject _pointsVao;
+
+    // cones
+    QOpenGLBuffer _conesVbo;
+    QOpenGLVertexArrayObject _conesVao;
+    int _coneSlice;
+    int _verticesPerCone;
 
     int _mvpMatrixLocation;
     int _colorLocation;
@@ -39,14 +51,11 @@ private:
     //QImage _imgGL;
     //GLuint _imgID;
 
-    // rejection sampling
+    // sampling
     RejectionSampling* _rSampling;
     std::vector<MyPoint> _initialPoints;
     int _numSample;
     std::vector<QColor> _coneColors;
-
-    // Svg
-    //SvgPainter* _svgPainter;
 
 public:
 
@@ -106,10 +115,10 @@ protected:
 
 private:
     void SetColor(const QColor& col);
-    void DrawLine(MyPoint p1, MyPoint p2);
-    void DrawImage();
-    void DrawPoints();
-    void DrawCones();
+    void PaintLine(MyPoint p1, MyPoint p2);
+    void PaintImage();
+    void PaintPoints();
+    void PaintCones();
     //void DrawCones(int xInit, int yInit);
 
     QMatrix4x4 GetCameraMatrix();
