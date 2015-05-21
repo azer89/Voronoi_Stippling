@@ -29,5 +29,7 @@ private slots:
 
     void SaveSVG();
 
+    void SaveBitmap();
+
 };
 #endif // WVS_MAIN_WINDOW_H

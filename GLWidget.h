@@ -17,13 +17,10 @@ private:
     std::vector<MyPoint> _tempPoints;
     std::vector< std::vector<MyPoint> > _points;
 
-    /* OpenGL 3.3 */
-    //QOpenGLBuffer _vbo;
-    //QOpenGLVertexArrayObject _vertexArrayObject;
     QOpenGLTexture* _texture;
     QOpenGLShaderProgram* _shaderProgram;
 
-    // Image
+    // the input image
     QOpenGLBuffer _imageVbo;
     QOpenGLVertexArrayObject _imageVao;
 
@@ -35,27 +32,35 @@ private:
     QOpenGLBuffer _conesVbo;
     QOpenGLVertexArrayObject _conesVao;
     int _coneSlice;
-    int _verticesPerCone;
+    int _verticesPerCone; // it is _coneSlice + 2
 
+    // for rendering
     int _mvpMatrixLocation;
     int _colorLocation;
     QMatrix4x4 _perspMatrix;
     QMatrix4x4 _transformMatrix;
 
-    // image size (does not depend on QImage)
+    // image size
     int _img_width;
     int _img_height;
 
-    // image
+    // original image
     QImage _imgOriginal;
+    // a buffer for lloyd's method
+    QImage _imageBuffer;
     //QImage _imgGL;
     //GLuint _imgID;
 
-    // sampling
-    RejectionSampling* _rSampling;
-    std::vector<MyPoint> _initialPoints;
+    // random sampling
     int _numSample;
-    std::vector<QColor> _coneColors;
+    RejectionSampling* _rSampling;      // an instance that generates random sampling
+    std::vector<MyPoint> _centroids ;   // centroids of voronoi cells
+    std::vector<QColor> _coneColors;    // this stores indices of centroids as colors
+
+    // variables for weighted voronoi diagram
+    std::vector<float> _mArray;     // weighted moment
+    std::vector<float> _cxArray;
+    std::vector<float> _cyArray;
 
 public:
 
@@ -68,9 +73,6 @@ public:
 
     void SetImage(QString img);
 
-    QImage LoadAsGrayscale(QString img);
-
-    // save current buffer to image
     void SaveImage(QString filename);
 
     // zoom in handle
@@ -101,7 +103,12 @@ public:
     // reset everything
     void Reset();
 
+    // render to svg
     void SaveToSvg();
+
+    // render a scene to a buffer,
+    // then the buffer is saved as an image
+    void SaveToBitmap();
 
 protected:
     // qt event
@@ -114,21 +121,25 @@ protected:
     void resizeGL(int width, int height);
 
 private:
+    QImage LoadImageAsGrayscale(QString img);
+
     void SetColor(const QColor& col);
+
     void PaintLine(MyPoint p1, MyPoint p2);
     void PaintImage();
     void PaintPoints();
     void PaintCones();
     //void DrawCones(int xInit, int yInit);
 
-    QMatrix4x4 GetCameraMatrix();
-    void TranslateWorld(float x, float y, float z);
-    void RotateWorld(float x, float y, float z);
-    void ScaleWorld(float x, float y, float z);
+    //QMatrix4x4 GetCameraMatrix();
+    //void TranslateWorld(float x, float y, float z);
+    //void RotateWorld(float x, float y, float z);
+    //void ScaleWorld(float x, float y, float z);
 
     std::vector<float> GetGrayValues();
-    void GenerateConeColors();
 
+    void GenerateConeColors();
+    int IndexFromColor(QColor col);
 };
 
 

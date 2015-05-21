@@ -35,6 +35,7 @@
     </property>
     <addaction name="actionOpen"/>
     <addaction name="actionSave_as_an_svg_file"/>
+    <addaction name="actionSave_as_a_bitmap"/>
    </widget>
    <addaction name="menuFile"/>
   </widget>
@@ -55,6 +56,11 @@
   <action name="actionSave_as_an_svg_file">
    <property name="text">
     <string>Save as an svg file</string>
+   </property>
+  </action>
+  <action name="actionSave_as_a_bitmap">
+   <property name="text">
+    <string>Save as a bitmap</string>
    </property>
   </action>
  </widget>

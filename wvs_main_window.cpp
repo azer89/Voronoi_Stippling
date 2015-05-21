@@ -10,10 +10,11 @@ wvs_main_window::wvs_main_window(QWidget *parent) :
     connect(ui->actionOpen,	 SIGNAL(triggered()), this, SLOT(OpenFileAction()));
     ofTimer = new QTimer(this); connect(ofTimer, SIGNAL(timeout()), this, SLOT(OpenFileThread()));
 
-
     // actionSave_as_an_svg_file
     connect(ui->actionSave_as_an_svg_file,	 SIGNAL(triggered()), this, SLOT(SaveSVG()));
 
+    // actionSave_as_a_bitmap
+    connect(ui->actionSave_as_a_bitmap,	 SIGNAL(triggered()), this, SLOT(SaveBitmap()));
 }
 
 wvs_main_window::~wvs_main_window()
@@ -24,6 +25,11 @@ wvs_main_window::~wvs_main_window()
 void wvs_main_window::SaveSVG()
 {
     ui->widget->GetGLWidget()->SaveToSvg();
+}
+
+void wvs_main_window::SaveBitmap()
+{
+    ui->widget->GetGLWidget()->SaveToBitmap();
 }
 
 void wvs_main_window::OpenFileThread()

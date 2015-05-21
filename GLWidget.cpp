@@ -43,7 +43,7 @@ GLWidget::GLWidget(QGLFormat format, QWidget *parent) :
     _shaderProgram(0),
     _rSampling(0),
 
-    _numSample(10000),
+    _numSample(10),
     _coneSlice (32),
     _verticesPerCone (34) // _coneSlice + 2
 
@@ -100,7 +100,6 @@ void GLWidget::initializeGL()
 
     // sampling
     _rSampling = new RejectionSampling();
-
 }
 
 
@@ -227,7 +226,7 @@ void GLWidget::PaintCones()
     //_conesVao.release();
 
     _conesVao.bind();
-    for(size_t a = 0; a < _initialPoints.size(); a++)
+    for(size_t a = 0; a < _centroids.size(); a++)
     {
         glDrawArrays(GL_TRIANGLE_FAN, a * _verticesPerCone, _verticesPerCone);
     }
@@ -241,7 +240,7 @@ void GLWidget::PaintPoints()
         return;
     }
 
-    glPointSize(3.0f);
+    glPointSize(5.0f);
 
     int use_color_location = _shaderProgram->uniformLocation("use_color");
     _shaderProgram->setUniformValue(use_color_location, (GLfloat)1.0);
@@ -279,7 +278,7 @@ void GLWidget::PaintPoints()
    _shaderProgram->setAttributeBuffer(_colorLocation, GL_FLOAT, offset, 3, sizeof(VertexData));
    */
     _pointsVao.bind();
-    glDrawArrays(GL_POINTS, 0, _initialPoints.size());
+    glDrawArrays(GL_POINTS, 0, _centroids.size());
     _pointsVao.release();
 }
 
@@ -341,7 +340,6 @@ void GLWidget::paintGL()
     transformMatrix.setToIdentity();
     transformMatrix.scale(_zoomFactor);
 
-    // Bind buffer object
     _shaderProgram->setUniformValue(_mvpMatrixLocation, orthoMatrix * transformMatrix);
 
     /*
@@ -364,7 +362,7 @@ void GLWidget::paintGL()
 
     PaintCones();
 
-    PaintPoints();
+    //PaintPoints();
 
     // draw the input image
     //PaintImage();
@@ -399,6 +397,11 @@ void GLWidget::mousePressEvent(int x, int y)
     dy /= _zoomFactor;
 
     _tempPoints.push_back(MyPoint(dx, dy));
+
+    QColor col = QColor(_imageBuffer.pixel(dx, dy));
+    int idx = IndexFromColor(col);
+    std::cout << idx << "\n";
+    //std::cout << col.red() << " " << col.green() << " " << col.blue() << " " << "\n";
 
     this->repaint();
 }
@@ -460,7 +463,7 @@ SetImage(QString img)
     // fixme, need a square image
     this->Reset();
     //_imgOriginal.load(img);
-    _imgOriginal = LoadAsGrayscale(img);
+    _imgOriginal = LoadImageAsGrayscale(img);
 
     // size
     this->_img_width = _imgOriginal.width();
@@ -475,9 +478,9 @@ SetImage(QString img)
     _shaderProgram->setAttributeValue("base_texture", _texture->textureId());
 
     // calculate random sampling
-    _initialPoints.clear();
-    _initialPoints = _rSampling->GeneratePoints(GetGrayValues(), _numSample, _img_width, _img_height);
-    std::cout << "_initialPoints.size() equals to " << _initialPoints.size() << "\n";
+    _centroids.clear();
+    _centroids = _rSampling->GeneratePoints(GetGrayValues(), _numSample, _img_width, _img_height);
+    std::cout << "# centroid is " << _centroids.size() << "\n";
 
     //for(size_t a = 0; a < _initialPoints.size(); a++)
     //{
@@ -525,21 +528,21 @@ SetImage(QString img)
 
     QVector<VertexData> pointsVertices;
 
-    for(size_t a = 0; a < _initialPoints.size(); a++)
+    for(size_t a = 0; a < _centroids.size(); a++)
     {
-        int xPt = _initialPoints[a].x;
-        int yPt = _initialPoints[a].y;
+        int xPt = _centroids[a].x;
+        int yPt = _centroids[a].y;
 
-        float rCol = rand() % 255;
-        float gCol = rand() % 255;
-        float bCol = rand() % 255;
+        float rCol = 0;
+        float gCol = 0;
+        float bCol = 0;
 
         pointsVertices.append(VertexData(QVector3D(xPt, yPt,  15.0f), QVector2D(), QVector3D(rCol / 255.0, gCol / 255.0, bCol / 255.0)));
     }
 
     _pointsVbo.create();
     _pointsVbo.bind();
-    _pointsVbo.allocate(pointsVertices.data(), _initialPoints.size() * sizeof(VertexData));
+    _pointsVbo.allocate(pointsVertices.data(), _centroids.size() * sizeof(VertexData));
 
     // reuse the variable
     offset = 0;
@@ -562,11 +565,11 @@ SetImage(QString img)
     _conesVao.bind();
 
     QVector<VertexData> conesVertices;
-    for(size_t iter = 0; iter < _initialPoints.size(); iter++)
+    for(size_t iter = 0; iter < _centroids.size(); iter++)
     {
 
-        int xCenter = _initialPoints[iter].x;
-        int yCenter = _initialPoints[iter].y;
+        int xCenter = _centroids[iter].x;
+        int yCenter = _centroids[iter].y;
         float radius = 50;
         //int slice = 16;
 
@@ -610,9 +613,12 @@ SetImage(QString img)
     _shaderProgram->setAttributeBuffer(_colorLocation, GL_FLOAT, offset, 3, sizeof(VertexData));
 
     _conesVao.release();
+
+    // draw buffer
+    SaveToBitmap();
 }
 
-QImage GLWidget::LoadAsGrayscale(QString img)
+QImage GLWidget::LoadImageAsGrayscale(QString img)
 {
     QImage oriImage;
     oriImage.load(img);
@@ -640,6 +646,7 @@ void GLWidget::SaveImage(QString filename)
     if( !image.save( filename) ) std::cout << "Error saving image\n";
 }
 
+/*
 QMatrix4x4 GLWidget::GetCameraMatrix()
 {
     // Todo: Ask if we want to keep this.
@@ -653,21 +660,22 @@ QMatrix4x4 GLWidget::GetCameraMatrix()
 
     return _perspMatrix * vMatrix * _transformMatrix;
 }
+*/
 
-void GLWidget::TranslateWorld(float x, float y, float z) {
-    // Todo: Ask if we want to keep this.
-    _transformMatrix.translate(x, y, z);
-}
+//void GLWidget::TranslateWorld(float x, float y, float z) {
+//    // Todo: Ask if we want to keep this.
+//    _transformMatrix.translate(x, y, z);
+//}
 
-void GLWidget::RotateWorld(float x, float y, float z) {
-    // Todo: Ask if we want to keep this.
-    _transformMatrix.rotate(x, y, z);
-}
+//void GLWidget::RotateWorld(float x, float y, float z) {
+//    // Todo: Ask if we want to keep this.
+//    _transformMatrix.rotate(x, y, z);
+//}
 
-void GLWidget::ScaleWorld(float x, float y, float z) {
-    // Todo: Ask if we want to keep this.
-    _transformMatrix.scale(x, y, z);
-}
+//void GLWidget::ScaleWorld(float x, float y, float z) {
+//    // Todo: Ask if we want to keep this.
+//    _transformMatrix.scale(x, y, z);
+//}
 
 void GLWidget::HorizontalScroll(int val) { _scrollOffset.setX(val); }
 void GLWidget::VerticalScroll(int val) { _scrollOffset.setY(val); }
@@ -676,6 +684,36 @@ void GLWidget::ZoomOut() { this->_zoomFactor -= 0.05f; if(this->_zoomFactor < 0.
 
 void GLWidget::Reset()
 {
+}
+
+void GLWidget::SaveToBitmap()
+{
+    QGLFramebufferObjectFormat fmt;
+    fmt.setAttachment(QGLFramebufferObject::Depth);
+    QGLFramebufferObject fBuffer(_img_width, _img_height, fmt);
+
+    // bind frame buffer
+    fBuffer.bind();
+
+    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+    // calculate a projection which conforms the dimension of the input image
+    glViewport(0, 0, _img_width,  _img_height);
+    QMatrix4x4 orthoMatrix;
+    orthoMatrix.ortho(0.0, (float)_img_width, (float)_img_height, 0.0, -100, 100);
+    QMatrix4x4 transformMatrix;
+    transformMatrix.setToIdentity();
+    _shaderProgram->setUniformValue(_mvpMatrixLocation, orthoMatrix * transformMatrix);
+
+    PaintCones();
+    //PaintPoints();
+
+    // unbind frame buffer
+    fBuffer.release();
+
+    QImage grabbedImage = fBuffer.toImage();
+    grabbedImage.save("image.png");
+    _imageBuffer = grabbedImage;
 }
 
 void GLWidget::SaveToSvg()
@@ -730,10 +768,10 @@ void GLWidget::SaveToSvg()
     }
     */
 
-    for(size_t a = 0; a < _initialPoints.size(); a++)
+    for(size_t a = 0; a < _centroids.size(); a++)
     {
-        int xPt = _initialPoints[a].x;
-        int yPt = _initialPoints[a].y;
+        int xPt = _centroids[a].x;
+        int yPt = _centroids[a].y;
         painter.drawEllipse(xPt - circleOffset, yPt - circleOffset, circleDiameter, circleDiameter);
 
         //painter.drawPoint(QPoint(_initialPoints[a].x, _initialPoints[a].y));
@@ -765,21 +803,29 @@ void GLWidget::GenerateConeColors()
         bVector[a] = a;
     }
 
-    //std::random_shuffle(rVector.begin(), rVector.end());
-    //std::random_shuffle(gVector.begin(), gVector.end());
-    //std::random_shuffle(bVector.begin(), bVector.end());
+    /*
 
+    0...255 RGB Colors
+    0..._numSamples indices
+
+    how to retrieve an index:
+        index = (red * 65536) + (green * 256) + (blue);
+    */
 
     _coneColors.clear();
-    for(size_t a = 0; a < 256 && _coneColors.size() < _initialPoints.size(); a++)
+    for(size_t a = 0; a < 256 && _coneColors.size() < _centroids.size(); a++)
     {
-        for(size_t b = 0; b < 256 && _coneColors.size() < _initialPoints.size(); b++)
+        for(size_t b = 0; b < 256 && _coneColors.size() < _centroids.size(); b++)
         {
-            for(size_t c = 0; c < 256 && _coneColors.size() < _initialPoints.size(); c++)
+            for(size_t c = 0; c < 256 && _coneColors.size() < _centroids.size(); c++)
             {
                 _coneColors.push_back(QColor(rVector[a], gVector[b], bVector[c]));
-                //std::cout << rVector[a] << " " << gVector[b] << " " << bVector[c] << "\n";
             }
         }
     }
+}
+
+int GLWidget::IndexFromColor(QColor col)
+{
+    return (col.red() * 65536) + (col.green() * 256) + (col.blue());
 }
