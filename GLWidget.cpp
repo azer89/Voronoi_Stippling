@@ -161,13 +161,17 @@ void GLWidget::PaintPoints()
 {
     if(_img_width == 0 && _img_height == 0) { return; }
 
-    glPointSize(5.0f);
+    //glPointSize(5.0f);
 
     int use_color_location = _shaderProgram->uniformLocation("use_color");
     _shaderProgram->setUniformValue(use_color_location, (GLfloat)1.0);
 
     _centroidsVao.bind();
-    glDrawArrays(GL_POINTS, 0, _centroids.size());
+    //glDrawArrays(GL_POINTS, 0, _centroids.size());
+    for(size_t a = 0; a < _centroids.size(); a++)
+    {
+        glDrawArrays(GL_TRIANGLE_FAN, a * 18, 18);
+    }
     _centroidsVao.release();
 }
 
@@ -219,14 +223,14 @@ void GLWidget::paintGL()
         NextLloydIteration();
         _currentIter++;
 
-        if(_currentIter >= SystemParams::max_iter)
+        if(_currentIter >= SystemParams::max_iter || _displacement < std::numeric_limits<int>::epsilon())
         {
             _iterStatus = -1;
             //EndLloydIteration();
         }
         else
         {
-            std::cout << "iteration " << _currentIter << "\n";
+            std::cout << "iteration " << _currentIter << ", displacement " << _displacement << "\n";
         }
 
     }
@@ -278,7 +282,7 @@ void GLWidget::paintGL()
     PaintPoints();
 
     // draw the input image
-    PaintImage();
+    //PaintImage();
 
     // draw initial points
 
@@ -494,6 +498,8 @@ void GLWidget::InitLloydIteration()
     // calculate random sampling
     _centroids.clear();
     _centroids = _rSampling->GeneratePoints(GetGrayValues(), SystemParams::num_stipples, _img_width, _img_height);
+    _prevCentroids = std::vector<MyPoint>(_centroids.size());
+    _centroidsArea = std::vector<float>(_centroids.size());
     std::cout << "# centroid is " << _centroids.size() << "\n";
 
     //fixme: rounding error?
@@ -501,7 +507,18 @@ void GLWidget::InitLloydIteration()
     {
         _centroids[a].x += 1.0;
         _centroids[a].y += 1.0;
+
+        _centroidsArea[a] = 0;
+        //_displacements[a] = 0;
     }
+
+    for(size_t a = 0; a < _centroids.size(); a++)
+    {
+        _prevCentroids[a].x += _centroids[a].x;
+        _prevCentroids[a].y += _centroids[a].y;
+    }
+
+    _displacement = std::numeric_limits<float>::max();
 
     // generate index colors
     GenerateConeColors();
@@ -562,8 +579,8 @@ void GLWidget::UpdateCentroids()
             val = 1.0 - val;
 
             mArray[idx] += val;
-            cxArray[idx] += val * b;
-            cyArray[idx] += val * a;
+            cxArray[idx] += val * (b + 1.0);
+            cyArray[idx] += val * (a + 1.0);
         }
     }
 
@@ -573,10 +590,25 @@ void GLWidget::UpdateCentroids()
         if(mArray[a] > std::numeric_limits<float>::epsilon())
         {
             // fixme: rounding error
-            _centroids[a].x = (cxArray[a] / mArray[a]) + 1.0;
-            _centroids[a].y = (cyArray[a] / mArray[a]) + 1.0;
+            _centroids[a].x = (cxArray[a] / mArray[a]);
+            _centroids[a].y = (cyArray[a] / mArray[a]);
+
+            _centroidsArea[a] = mArray[a];
         }
     }
+
+    float sumDisplacement = 0.0;
+    for(size_t a = 0; a < _centroids.size(); a++)
+    {
+        sumDisplacement += _centroids[a].Distance(_prevCentroids[a]);
+    }
+    _displacement = sumDisplacement / (float)_centroids.size();
+    for(size_t a = 0; a < _centroids.size(); a++)
+    {
+        _prevCentroids[a].x += _centroids[a].x;
+        _prevCentroids[a].y += _centroids[a].y;
+    }
+
 }
 
 void GLWidget::PrepareCentroids()
@@ -592,23 +624,32 @@ void GLWidget::PrepareCentroids()
 
     for(size_t a = 0; a < _centroids.size(); a++)
     {
-        int xPt = _centroids[a].x;
-        int yPt = _centroids[a].y;
+        int xCenter = _centroids[a].x;
+        int yCenter = _centroids[a].y;
+        //float radius = 1;
+        //float radius = _centroidsArea[a] * 0.2 / 2.0;
+        float radius = 0.75 * sqrt(_centroidsArea[a] / M_PI);
 
-//        float rCol = rand() % 255;
-//        float gCol = rand() % 255;
-//        float bCol = rand() % 255;
+        //QColor col(0, 0, 0);
+        //QVector3D vecCol = QVector3D((float)col.red() / 255.0, (float)col.green() / 255.0, (float)col.blue() / 255.0);
+        QVector3D vecCol(0, 0, 0);
 
-        float rCol = 0;
-        float gCol = 0;
-        float bCol = 0;
-
-        pointsVertices.append(VertexData(QVector3D(xPt, yPt,  15.0f), QVector2D(), QVector3D(rCol / 255.0, gCol / 255.0, bCol / 255.0)));
+        pointsVertices.append(VertexData(QVector3D(xCenter, yCenter,  0.0f), QVector2D(), vecCol));
+        float addValue = (M_PI * 2.0 / 16);
+        for(float a = 0.0; a < M_PI * 2.0; a += addValue)
+        {
+            float xPt = xCenter + radius * sin(a);
+            float yPt = yCenter + radius * cos(a);
+            pointsVertices.append(VertexData(QVector3D(xPt, yPt,  0.0f), QVector2D(), vecCol));
+        }
+        float xPt = xCenter + radius * sin(M_PI * 2.0);
+        float yPt = yCenter + radius * cos(M_PI * 2.0);
+        pointsVertices.append(VertexData(QVector3D(xPt, yPt,  0.0f), QVector2D(), vecCol));
     }
 
     _centroidsVbo.create();
     _centroidsVbo.bind();
-    _centroidsVbo.allocate(pointsVertices.data(), _centroids.size() * sizeof(VertexData));
+    _centroidsVbo.allocate(pointsVertices.data(), pointsVertices.size() * sizeof(VertexData));
 
     // reuse the variable
     quintptr offset = 0;
@@ -793,8 +834,8 @@ void GLWidget::SaveToSvg()
     }*/
 
 
-    size_t circleDiameter = 4;
-    size_t circleOffset = circleDiameter / 2;
+    //size_t circleDiameter = 4;
+    //size_t circleOffset = circleDiameter / 2;
     painter.setBrush(QBrush(Qt::black, Qt::SolidPattern));
     /*
     for(size_t a = 0; a < 200; a += 10)
@@ -808,9 +849,11 @@ void GLWidget::SaveToSvg()
 
     for(size_t a = 0; a < _centroids.size(); a++)
     {
+        float radius = 0.75 * sqrt(_centroidsArea[a] / M_PI);
+        float diameter = radius * 2;
         int xPt = _centroids[a].x;
         int yPt = _centroids[a].y;
-        painter.drawEllipse(xPt - circleOffset, yPt - circleOffset, circleDiameter, circleDiameter);
+        painter.drawEllipse(xPt - radius, yPt - radius, diameter, diameter);
 
         //painter.drawPoint(QPoint(_initialPoints[a].x, _initialPoints[a].y));
         //std:: cout << "(" << _initialPoints[a].x << ", " << _initialPoints[a].y << ")   ";

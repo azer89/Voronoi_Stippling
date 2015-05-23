@@ -55,6 +55,10 @@ private:
     //int _numSample;
     RejectionSampling* _rSampling;      // an instance that generates random sampling
     std::vector<MyPoint> _centroids ;   // centroids of voronoi cells
+    std::vector<float>   _centroidsArea;
+    std::vector<MyPoint> _prevCentroids ;
+    float _displacement;
+    //std::vector<float> _displacements;
     std::vector<QColor> _coneColors;    // this stores indices of centroids as colors
 
     // variables for weighted voronoi diagram
