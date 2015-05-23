@@ -12,19 +12,21 @@ TARGET = WVS
 TEMPLATE = app
 
 
-SOURCES += main.cpp\
-        wvs_main_window.cpp \
-    GLWidget.cpp \
-    GLContainer.cpp \
-    stdafx.cpp \
-    RejectionSampling.cpp
+SOURCES += main.cpp                 \
+           wvs_main_window.cpp      \
+           GLWidget.cpp             \
+           GLContainer.cpp          \
+           stdafx.cpp               \
+           RejectionSampling.cpp    \
+           SystemParams.cpp
 
-HEADERS  += wvs_main_window.h \
-    GLContainer.h \
-    MyPoint.h \
-    stdafx.h \
-    GLWidget.h \
-    RejectionSampling.h
+HEADERS  += wvs_main_window.h       \
+            GLContainer.h           \
+            MyPoint.h               \
+            stdafx.h                \
+            GLWidget.h              \
+            RejectionSampling.h     \
+            SystemParams.h
 
 FORMS    += wvs_main_window.ui
 

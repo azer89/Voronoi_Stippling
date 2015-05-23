@@ -20,6 +20,11 @@ private:
     std::string strFilename;
     QTimer* ofTimer;
 
+    bool imageLoaded;
+
+private:
+    //ProcessImage();
+
 
 private slots:
     // trigger thread to open image
@@ -30,6 +35,8 @@ private slots:
     void SaveSVG();
 
     void SaveBitmap();
+
+    void Recalculate();
 
 };
 #endif // WVS_MAIN_WINDOW_H

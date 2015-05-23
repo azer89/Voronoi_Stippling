@@ -38,8 +38,7 @@ GLContainer::GLContainer(QWidget *parent) :
 
     _doubleClickTimer = new QTimer(this); connect(_doubleClickTimer, SIGNAL(timeout()), this, SLOT(DummyFunction()));
     _doubleClickTimeout = 100;
-
-    //UpdateViewport(true);
+    
     this->_justInitialized = true;
 }
 
@@ -133,14 +132,11 @@ void GLContainer::UpdateViewport(bool putInMiddle)
 
 void GLContainer::paintEvent(QPaintEvent *event)
 {
-
     if(this->_justInitialized)
     {
         UpdateViewport(true);
         this->_justInitialized = false;
     }
-
-
 
     // please fix me
     if(this->width() != _glWidget->width() || this->height() != _glWidget->height())

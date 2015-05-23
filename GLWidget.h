@@ -24,15 +24,15 @@ private:
     QOpenGLBuffer _imageVbo;
     QOpenGLVertexArrayObject _imageVao;
 
-    // points
-    QOpenGLBuffer _pointsVbo;
-    QOpenGLVertexArrayObject _pointsVao;
+    // centroids
+    QOpenGLBuffer _centroidsVbo;
+    QOpenGLVertexArrayObject _centroidsVao;
 
     // cones
     QOpenGLBuffer _conesVbo;
     QOpenGLVertexArrayObject _conesVao;
-    int _coneSlice;
-    int _verticesPerCone; // it is _coneSlice + 2
+    //int _coneSlice;
+    //int _verticesPerCone; // _coneSlice + 2
 
     // for rendering
     int _mvpMatrixLocation;
@@ -52,15 +52,15 @@ private:
     //GLuint _imgID;
 
     // random sampling
-    int _numSample;
+    //int _numSample;
     RejectionSampling* _rSampling;      // an instance that generates random sampling
     std::vector<MyPoint> _centroids ;   // centroids of voronoi cells
     std::vector<QColor> _coneColors;    // this stores indices of centroids as colors
 
     // variables for weighted voronoi diagram
-    std::vector<float> _mArray;     // weighted moment
-    std::vector<float> _cxArray;
-    std::vector<float> _cyArray;
+    //std::vector<float> _mArray;     // weighted moment
+    //std::vector<float> _cxArray;
+    //std::vector<float> _cyArray;
 
 public:
 
@@ -110,6 +110,8 @@ public:
     // then the buffer is saved as an image
     void SaveToBitmap();
 
+    bool IsCalculationDone(){ return _iterStatus == -1; }
+
 protected:
     // qt event
     bool event( QEvent * event );
@@ -124,6 +126,11 @@ private:
     QImage LoadImageAsGrayscale(QString img);
 
     void SetColor(const QColor& col);
+
+    //void LloydIteration();
+    void PrepareCentroids();
+    void UpdateCentroids();
+    void CalculateCones();
 
     void PaintLine(MyPoint p1, MyPoint p2);
     void PaintImage();
@@ -140,6 +147,17 @@ private:
 
     void GenerateConeColors();
     int IndexFromColor(QColor col);
+
+    int _iterStatus; // -1 do nothing or stop
+                     //  0 init
+                     //  1 running
+    int _currentIter;
+    //QTimer* _iterTimer;
+    void InitLloydIteration();
+    void EndLloydIteration();
+
+private slots:
+    void NextLloydIteration();
 };
 
 

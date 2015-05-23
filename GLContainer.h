@@ -22,8 +22,6 @@ public:
     // set up scrolls (vertical and horizontal)
     void SetScrolls();
 
-    //void DoClustering(int k);
-
 
 protected:
     // global event
