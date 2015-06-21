@@ -26,10 +26,19 @@ HEADERS  += wvs_main_window.h       \
             stdafx.h                \
             GLWidget.h              \
             RejectionSampling.h     \
-            SystemParams.h
+            SystemParams.h \
+    MyLine.h \
+    MyIndexedLine.h
 
 FORMS    += wvs_main_window.ui
 
 LIBS += -lglut -lGL -lGLU
+
+INCLUDEPATH +=   /usr/include/
+LIBS        += -L/usr/include/
+LIBS        += -lCGAL
+LIBS        += -lgmp
+LIBS        += -lmpfr
+QMAKE_CXXFLAGS += -frounding-math -O3
 
 QMAKE_CXXFLAGS += -std=gnu++1y

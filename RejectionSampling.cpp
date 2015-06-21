@@ -52,10 +52,11 @@ std::vector<MyPoint> RejectionSampling::GeneratePoints(std::vector<float> grayVa
     for(size_t a = 0; a < numPt; a++)
     {
         int key = data[a].key;
-        int val = data[a].value;
+        //float val = data[a].value;
+        float val = grayValues[key];
         int xIndex = key % img_width;
         int yIndex = key / img_width;
-        if(val > 0.1) // fix me
+        if(val > 0.25) // fix me
         {
             randomPoints.push_back( MyPoint(xIndex, yIndex) );
         }

@@ -4,6 +4,8 @@
 
 int main(int argc, char *argv[])
 {
+    //system("./concorde d493.tsp");
+
     QApplication a(argc, argv);
     QApplication::setStyle(QStyleFactory::create("fusion"));
     QPalette p;

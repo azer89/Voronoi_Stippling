@@ -3,7 +3,10 @@
 
 #include "stdafx.h"
 #include "MyPoint.h"
+#include "MyLine.h"
 #include "RejectionSampling.h"
+#include "MyIndexedLine.h"
+//#include "TSPIO.h"
 
 class GLWidget : public QGLWidget
 {
@@ -46,6 +49,7 @@ private:
 
     // original image
     QImage _imgOriginal;
+    QImage _imgColor;
     // a buffer for lloyd's method
     QImage _imageBuffer;
     //QImage _imgGL;
@@ -57,9 +61,15 @@ private:
     std::vector<MyPoint> _centroids ;   // centroids of voronoi cells
     std::vector<float>   _centroidsArea;
     std::vector<MyPoint> _prevCentroids ;
+    std::vector<QColor> _centroidColors ;
     float _displacement;
     //std::vector<float> _displacements;
     std::vector<QColor> _coneColors;    // this stores indices of centroids as colors
+
+    std::vector<MyLine> _lines;
+
+    //TSPIO* _tspIo;
+    std::vector<int> _tspPath;
 
     // variables for weighted voronoi diagram
     //std::vector<float> _mArray;     // weighted moment
@@ -140,6 +150,9 @@ private:
     void PaintImage();
     void PaintPoints();
     void PaintCones();
+
+    void PerformTriangulation();
+    void ProcessTSP();
     //void DrawCones(int xInit, int yInit);
 
     //QMatrix4x4 GetCameraMatrix();

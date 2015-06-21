@@ -3,7 +3,39 @@
 #include "GLWidget.h"
 #include "SystemParams.h"
 
+
 #include <limits>
+#include <string>
+
+#include <CGAL/Exact_predicates_inexact_constructions_kernel.h>
+#include <CGAL/Projection_traits_xy_3.h>
+#include <CGAL/Delaunay_triangulation_2.h>
+#include <fstream>
+typedef CGAL::Exact_predicates_inexact_constructions_kernel K;
+typedef CGAL::Projection_traits_xy_3<K>  Gt;
+typedef CGAL::Delaunay_triangulation_2<Gt> Delaunay;
+typedef K::Point_3   Point;
+
+
+std::vector<std::string>& my_split_str(const std::string &s, char delim, std::vector<std::string> &elems)
+{
+    std::stringstream ss(s);
+    std::string item;
+    while (std::getline(ss, item, delim))
+    {
+        elems.push_back(item);
+    }
+    return elems;
+}
+
+
+std::vector<std::string> my_split_str(const std::string &s, char delim)
+{
+    std::vector<std::string> elems;
+    my_split_str(s, delim, elems);
+    return elems;
+}
+
 
 // VertexData
 struct VertexData
@@ -50,6 +82,7 @@ GLWidget::GLWidget(QGLFormat format, QWidget *parent) :
 
     _iterStatus(-1)
 
+    //_tspIo(0)
 
     //_numSample(30000),
     //_coneSlice (32),
@@ -69,6 +102,7 @@ GLWidget::~GLWidget()
     if(_texture) delete _texture;
     if(_shaderProgram) delete _shaderProgram;
     if(_rSampling) delete _rSampling;
+    //if(_tspIo) delete _tspIo;
     //if(_iterTimer) delete _iterTimer;
 }
 
@@ -83,7 +117,7 @@ void GLWidget::initializeGL()
 
     glEnable(GL_BLEND);
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-    glClearColor( 0.4, 0.4, 0.4, 1.0 );
+    glClearColor( 1.0, 1.0, 1.0, 1.0 );
     glEnable(GL_DEPTH_TEST);
 
     _shaderProgram = new QOpenGLShaderProgram();
@@ -104,6 +138,9 @@ void GLWidget::initializeGL()
 
     // sampling
     _rSampling = new RejectionSampling();
+
+    // IO
+    //_tspIo = new TSPIO();
 }
 
 
@@ -209,6 +246,85 @@ void GLWidget::PaintLine(MyPoint p1, MyPoint p2)
    */
 }
 
+void GLWidget::ProcessTSP()
+{
+    // create a .tsp
+    std::cout << "TSP\n";
+    std::cout << "# points: " << _centroids.size() << "\n";
+
+    using namespace std;
+    ofstream f;
+    f.open ("nux.tsp");
+
+
+    f << "NAME : nux\n";
+    f << "COMMENT : what a day, what a lovely day\n";
+    f << "TYPE : TSP\n";
+    f << "DIMENSION : " << _centroids.size() << "\n";
+    f << "EDGE_WEIGHT_TYPE : EUC_2D\n";
+    f << "NODE_COORD_SECTION\n";
+
+
+    for(size_t a = 0; a < _centroids.size(); a++)
+    {
+        f << (a + 1) << " "
+          << std::setprecision(20) << _centroids[a].x << " "
+          << std::setprecision(20) << _centroids[a].y << "\n";
+    }
+
+    f << "EOF\n";
+
+    f.close();
+
+    // hack
+    system("./concorde -V nux.tsp");
+    std::cout << "TSP DONE !!!\n";
+    //system("chmod 777 nux.sol");
+
+    // read
+
+    std::ifstream myfile ("nux.sol");
+    size_t curLine = 0;
+    _tspPath.clear();
+    while(!myfile.eof())
+    {
+        //std::cout << "test\n";
+
+        std::string line;
+        std::getline (myfile,line);
+
+
+        if(curLine == 0)
+        {
+            curLine++;
+            continue;
+        }
+        //std::cout << line << "\n";
+
+
+        if(line.size() == 0) {continue;}
+
+        std::vector<std::string> arrayStr = my_split_str(line, ' ');
+
+        for(size_t a = 0; a < arrayStr.size(); a++)
+        {
+            int idx = std::stoi(arrayStr[a]);
+            _tspPath.push_back(idx);
+            //std::cout << arrayStr[a] << "-\n";
+        }
+
+        /*
+        for(size_t a = 0; a < _tspPath.size(); a++)
+        {
+            std::cout << _tspPath[a] << "-\n";
+        }
+        */
+
+        //curLine++;
+    }
+    myfile.close();
+}
+
 void GLWidget::paintGL()
 {
     if(_iterStatus == 0)
@@ -226,6 +342,8 @@ void GLWidget::paintGL()
         if(_currentIter >= SystemParams::max_iter || _displacement < std::numeric_limits<int>::epsilon())
         {
             _iterStatus = -1;
+            PerformTriangulation();
+            ProcessTSP();
             //EndLloydIteration();
         }
         else
@@ -388,6 +506,7 @@ void GLWidget::SetImage(QString img)
     // fixme, need a square image
     this->Reset();
     //_imgOriginal.load(img);
+    _imgColor.load(img);
     _imgOriginal = LoadImageAsGrayscale(img);
 
     // size
@@ -500,6 +619,7 @@ void GLWidget::InitLloydIteration()
     _centroids = _rSampling->GeneratePoints(GetGrayValues(), SystemParams::num_stipples, _img_width, _img_height);
     _prevCentroids = std::vector<MyPoint>(_centroids.size());
     _centroidsArea = std::vector<float>(_centroids.size());
+    _centroidColors = std::vector<QColor>(_centroids.size());
     std::cout << "# centroid is " << _centroids.size() << "\n";
 
     //fixme: rounding error?
@@ -509,6 +629,7 @@ void GLWidget::InitLloydIteration()
         _centroids[a].y += 1.0;
 
         _centroidsArea[a] = 0;
+        _centroidColors[a] = QColor(0, 0, 0);
         //_displacements[a] = 0;
     }
 
@@ -542,9 +663,80 @@ void GLWidget::NextLloydIteration()
     //}
 }
 
+
+
 void GLWidget::EndLloydIteration()
 {
     PrepareCentroids();
+}
+
+void GLWidget::PerformTriangulation()
+{
+    /*
+    CDT cdt;
+
+    for(size_t a = 0; a < _centroids.size(); a++)
+    {
+        cdt.insert(Point(_centroids[a].x, _centroids[a].y));
+
+    }
+
+    CDT::Finite_edges_iterator fiter = cdt.finite_edges_begin();
+    for(; fiter != cdt.finite_edges_end(); fiter++)
+    {
+        CDT::Segment seg = cdt.segment( *fiter );
+        CDT::Point p0 = seg.point(0);
+        CDT::Point p1 = seg.point(1);
+
+        _lines.push_back(MyLine(p0.x(), p0.y(), p1.x(), p1.y()));
+    }
+    */
+
+    std::vector <Point> points;
+    for(size_t a = 0; a < _centroids.size(); a++)
+    {
+        points.push_back(Point(_centroids[a].x, _centroids[a].y, 0));
+    }
+
+    Delaunay dt(points.begin(), points.end());
+    _lines.clear();
+    Delaunay::Finite_edges_iterator fiter = dt.finite_edges_begin();
+    for(; fiter != dt.finite_edges_end(); fiter++)
+    {
+        Delaunay::Segment seg = dt.segment( *fiter );
+        Delaunay::Point p0 = seg.point(0);
+        Delaunay::Point p1 = seg.point(1);
+
+        _lines.push_back(MyLine(p0.x(), p0.y(), p1.x(), p1.y()));
+    }
+
+    //std::cout << dt.number_of_vertices() << std::endl;
+
+    /*
+    std::vector <Point> points;
+    for(size_t a = 0; a < _centroids.size(); a++)
+    {
+        points.push_back(Point(_centroids[a].x, _centroids[a].y));
+    }
+
+    Triangulation t;
+    t.insert(points.begin(), points.end());
+
+    _lines.clear();
+
+    Triangulation::Finite_edges_iterator fiter = t.finite_edges_begin();
+    for(; fiter != t.finite_edges_end(); fiter++)
+    {
+        Triangulation::Segment seg = t.segment( *fiter );
+        Triangulation::Point p0 = seg.point(0);
+        Triangulation::Point p1 = seg.point(1);
+
+        _lines.push_back(MyLine(p0.x(), p0.y(), p1.x(), p1.y()));
+
+
+        //std::cout << "(" << p0.x() << ", " << p0.y() << ") --> (" << p1.x() << ", " << p1.y() << ")\n";
+    }
+    */
 }
 
 
@@ -552,14 +744,24 @@ void GLWidget::UpdateCentroids()
 {
     // variables for weighted voronoi diagram
     std::vector<float> mArray(_centroids.size());     // weighted moment
+    std::vector<float> areaArray(_centroids.size());
     std::vector<float> cxArray(_centroids.size());
     std::vector<float> cyArray(_centroids.size());
 
+    std::vector<float> rArray(_centroids.size());
+    std::vector<float> gArray(_centroids.size());
+    std::vector<float> bArray(_centroids.size());
+
     for(size_t a = 0; a < _centroids.size(); a++)
     {
+        areaArray[a] = 0;
         mArray[a] = 0;
         cxArray[a] = 0;
         cyArray[a] = 0;
+
+        rArray[a] = 0;
+        gArray[a] = 0;
+        bArray[a] = 0;
     }
 
     // step 1 - Iterate over the entire image to calculate _mArray, _cxArray, and _cyArray
@@ -574,10 +776,16 @@ void GLWidget::UpdateCentroids()
                 continue;
             }
 
+            QColor rgbColor = QColor(_imgColor.pixel(b, a));
+            rArray[idx] += rgbColor.red();
+            gArray[idx] += rgbColor.green();
+            bArray[idx] += rgbColor.blue();
+
             float val = qGray(_imgOriginal.pixel(b, a));
             val /= 255.0;
             val = 1.0 - val;
 
+            areaArray[idx]++;
             mArray[idx] += val;
             cxArray[idx] += val * (b + 1.0);
             cyArray[idx] += val * (a + 1.0);
@@ -589,11 +797,16 @@ void GLWidget::UpdateCentroids()
     {        
         if(mArray[a] > std::numeric_limits<float>::epsilon())
         {
-            // fixme: rounding error
-            _centroids[a].x = (cxArray[a] / mArray[a]);
-            _centroids[a].y = (cyArray[a] / mArray[a]);
+        // fixme: rounding error
+        _centroids[a].x = (cxArray[a] / mArray[a]);
+        _centroids[a].y = (cyArray[a] / mArray[a]);
 
-            _centroidsArea[a] = mArray[a];
+        _centroidsArea[a] = mArray[a];
+
+        _centroidColors[a] = QColor(rArray[a] / areaArray[a],
+                                    gArray[a] / areaArray[a],
+                                    bArray[a] / areaArray[a]);
+
         }
     }
 
@@ -603,6 +816,7 @@ void GLWidget::UpdateCentroids()
         sumDisplacement += _centroids[a].Distance(_prevCentroids[a]);
     }
     _displacement = sumDisplacement / (float)_centroids.size();
+
     for(size_t a = 0; a < _centroids.size(); a++)
     {
         _prevCentroids[a].x += _centroids[a].x;
@@ -630,9 +844,10 @@ void GLWidget::PrepareCentroids()
         //float radius = _centroidsArea[a] * 0.2 / 2.0;
         float radius = 0.75 * sqrt(_centroidsArea[a] / M_PI);
 
-        //QColor col(0, 0, 0);
-        //QVector3D vecCol = QVector3D((float)col.red() / 255.0, (float)col.green() / 255.0, (float)col.blue() / 255.0);
-        QVector3D vecCol(0, 0, 0);
+        QColor col(0, 0, 0);
+        //QColor col = _centroidColors[a];
+        QVector3D vecCol = QVector3D((float)col.red() / 255.0, (float)col.green() / 255.0, (float)col.blue() / 255.0);
+
 
         pointsVertices.append(VertexData(QVector3D(xCenter, yCenter,  0.0f), QVector2D(), vecCol));
         float addValue = (M_PI * 2.0 / 16);
@@ -792,7 +1007,7 @@ void GLWidget::SaveToBitmap()
     //grabbedImage.save("image.png");
     _imageBuffer = grabbedImage;
 
-    glClearColor( 0.4, 0.4, 0.4, 1.0 );
+    glClearColor( 1.0, 1.0, 1.0, 1.0 );
 }
 
 void GLWidget::SaveToSvg()
@@ -812,59 +1027,50 @@ void GLWidget::SaveToSvg()
 
     // draw
     painter.setClipRect(QRect(0, 0, _img_width, _img_height));
+    /*
     painter.setPen(Qt::NoPen);
 
-    //painter.setPen(QPen(Qt::black));
-    // draw points (they are rectangles)
-    /*
-    for(size_t a = 0; a < 200; a += 10)
-    {
-        for(size_t b = 0; b < 200; b += 10)
-        {
-            painter.drawPoint(QPoint(a, b));
-        }
-    }
-    */
-
-    /*
-    for(size_t a = 0; a < _initialPoints.size(); a++)
-    {
-        painter.drawPoint(QPoint(_initialPoints[a].x, _initialPoints[a].y));
-        //std:: cout << "(" << _initialPoints[a].x << ", " << _initialPoints[a].y << ")   ";
-    }*/
-
-
-    //size_t circleDiameter = 4;
-    //size_t circleOffset = circleDiameter / 2;
     painter.setBrush(QBrush(Qt::black, Qt::SolidPattern));
-    /*
-    for(size_t a = 0; a < 200; a += 10)
-    {
-        for(size_t b = 0; b < 200; b += 10)
-        {
-            painter.drawEllipse(a - circleOffset, b - circleOffset, circleDiameter, circleDiameter);
-        }
-    }
-    */
 
     for(size_t a = 0; a < _centroids.size(); a++)
     {
+        QColor col = _centroidColors[a];
+
+
         float radius = 0.75 * sqrt(_centroidsArea[a] / M_PI);
         float diameter = radius * 2;
         int xPt = _centroids[a].x;
         int yPt = _centroids[a].y;
         painter.drawEllipse(xPt - radius, yPt - radius, diameter, diameter);
+    }*/
 
-        //painter.drawPoint(QPoint(_initialPoints[a].x, _initialPoints[a].y));
-        //std:: cout << "(" << _initialPoints[a].x << ", " << _initialPoints[a].y << ")   ";
+
+    // triangle art
+    /*painter.setPen(QPen(Qt::black, 0.5));
+    for(size_t a = 0; a < _lines.size(); a++)
+    {
+        MyLine aLine = _lines[a];
+        painter.drawLine(aLine.XA, aLine.YA, aLine.XB, aLine.YB);
     }
+    */
 
-//    QRectF rectangle(10.0, 20.0, 80.0, 60.0);
-//    QPainter painter(this);
-//    painter.drawEllipse(rectangle);
+    painter.setPen(QPen(Qt::black, 1.0));
+    std::cout << "tsp size: " << _tspPath.size() << "\n";
+    for(size_t a = 0; a < _tspPath.size(); a++)
+    {
+        MyPoint startPt = _centroids[_tspPath[a]];
+        MyPoint endPt;
 
-    //painter.drawLine(QLine(0, 35, 200, 35));
-    //painter.drawLine(QLine(0, 165, 200, 165));
+        if(a == _tspPath.size() - 1)
+        {
+            endPt = _centroids[_tspPath[0]];
+        }
+        else
+        {
+            endPt = _centroids[_tspPath[a + 1]];
+        }
+        painter.drawLine(startPt.x, startPt.y, endPt.x, endPt.y);
+    }
 
     painter.end();
 }
