@@ -51,8 +51,10 @@
 //#include <math.h>
 //#include <malloc.h>
 
-#include <GL/glu.h>
-#include <GL/glut.h>
+
+// on Windows it doesn't work...
+//#include <GL/glu.h>
+//#include <GL/glut.h>
 
 #define my_min(a,b) ((a)<(b) ? (a) : (b))
 #define my_max(a,b) ((a)>(b) ? (a) : (b))

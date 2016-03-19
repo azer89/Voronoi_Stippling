@@ -6,7 +6,14 @@
 
 #include <limits>
 #include <string>
+#include <iomanip>
 
+#define M_PI 3.14159265359
+//#define _USE_MATH_DEFINES
+//#include <cmath> 
+
+// Uncomment these if you want CGAL
+/*
 #include <CGAL/Exact_predicates_inexact_constructions_kernel.h>
 #include <CGAL/Projection_traits_xy_3.h>
 #include <CGAL/Delaunay_triangulation_2.h>
@@ -15,7 +22,7 @@ typedef CGAL::Exact_predicates_inexact_constructions_kernel K;
 typedef CGAL::Projection_traits_xy_3<K>  Gt;
 typedef CGAL::Delaunay_triangulation_2<Gt> Delaunay;
 typedef K::Point_3   Point;
-
+*/
 
 std::vector<std::string>& my_split_str(const std::string &s, char delim, std::vector<std::string> &elems)
 {
@@ -672,26 +679,7 @@ void GLWidget::EndLloydIteration()
 
 void GLWidget::PerformTriangulation()
 {
-    /*
-    CDT cdt;
-
-    for(size_t a = 0; a < _centroids.size(); a++)
-    {
-        cdt.insert(Point(_centroids[a].x, _centroids[a].y));
-
-    }
-
-    CDT::Finite_edges_iterator fiter = cdt.finite_edges_begin();
-    for(; fiter != cdt.finite_edges_end(); fiter++)
-    {
-        CDT::Segment seg = cdt.segment( *fiter );
-        CDT::Point p0 = seg.point(0);
-        CDT::Point p1 = seg.point(1);
-
-        _lines.push_back(MyLine(p0.x(), p0.y(), p1.x(), p1.y()));
-    }
-    */
-
+	/*
     std::vector <Point> points;
     for(size_t a = 0; a < _centroids.size(); a++)
     {
@@ -709,34 +697,7 @@ void GLWidget::PerformTriangulation()
 
         _lines.push_back(MyLine(p0.x(), p0.y(), p1.x(), p1.y()));
     }
-
-    //std::cout << dt.number_of_vertices() << std::endl;
-
-    /*
-    std::vector <Point> points;
-    for(size_t a = 0; a < _centroids.size(); a++)
-    {
-        points.push_back(Point(_centroids[a].x, _centroids[a].y));
-    }
-
-    Triangulation t;
-    t.insert(points.begin(), points.end());
-
-    _lines.clear();
-
-    Triangulation::Finite_edges_iterator fiter = t.finite_edges_begin();
-    for(; fiter != t.finite_edges_end(); fiter++)
-    {
-        Triangulation::Segment seg = t.segment( *fiter );
-        Triangulation::Point p0 = seg.point(0);
-        Triangulation::Point p1 = seg.point(1);
-
-        _lines.push_back(MyLine(p0.x(), p0.y(), p1.x(), p1.y()));
-
-
-        //std::cout << "(" << p0.x() << ", " << p0.y() << ") --> (" << p1.x() << ", " << p1.y() << ")\n";
-    }
-    */
+	*/
 }
 
 
