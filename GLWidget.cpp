@@ -255,6 +255,7 @@ void GLWidget::PaintLine(MyPoint p1, MyPoint p2)
 
 void GLWidget::ProcessTSP()
 {
+	/*
     // create a .tsp
     std::cout << "TSP\n";
     std::cout << "# points: " << _centroids.size() << "\n";
@@ -295,7 +296,6 @@ void GLWidget::ProcessTSP()
     _tspPath.clear();
     while(!myfile.eof())
     {
-        //std::cout << "test\n";
 
         std::string line;
         std::getline (myfile,line);
@@ -306,7 +306,6 @@ void GLWidget::ProcessTSP()
             curLine++;
             continue;
         }
-        //std::cout << line << "\n";
 
 
         if(line.size() == 0) {continue;}
@@ -317,19 +316,10 @@ void GLWidget::ProcessTSP()
         {
             int idx = std::stoi(arrayStr[a]);
             _tspPath.push_back(idx);
-            //std::cout << arrayStr[a] << "-\n";
         }
-
-        /*
-        for(size_t a = 0; a < _tspPath.size(); a++)
-        {
-            std::cout << _tspPath[a] << "-\n";
-        }
-        */
-
-        //curLine++;
     }
     myfile.close();
+	*/
 }
 
 void GLWidget::paintGL()
