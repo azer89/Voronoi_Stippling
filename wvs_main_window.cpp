@@ -70,7 +70,10 @@ void wvs_main_window::OpenFileThread()
 
         // Display image
         ui->widget->GetGLWidget()->SetImage(qFilename);
-        ui->widget->GetGLWidget()->repaint();
+        
+		ui->widget->GetGLWidget()->OneStepLloydIteration();
+		ui->widget->GetGLWidget()->repaint();
+
         ui->widget->SetScrolls();
 
         //std::cout << "Image processed\n";
@@ -108,7 +111,8 @@ void wvs_main_window::OpenFileThread()
         }
         else
         {
-            //std::cout << "repaint\n";
+            //std::cout << "OpenFileThread() repaint\n";
+			ui->widget->GetGLWidget()->OneStepLloydIteration();
             ui->widget->GetGLWidget()->repaint();
         }
     }

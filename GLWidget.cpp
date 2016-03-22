@@ -322,33 +322,39 @@ void GLWidget::ProcessTSP()
 	*/
 }
 
+void GLWidget::OneStepLloydIteration()
+{
+	if (_iterStatus == 0)
+	{
+		_currentIter = 0;
+		_iterStatus = 1;
+		InitLloydIteration();
+
+	}
+
+	if (_iterStatus == 1)
+	{
+		NextLloydIteration();
+		_currentIter++;
+
+		if (_currentIter >= SystemParams::max_iter || _displacement < std::numeric_limits<int>::epsilon())
+		{
+			_iterStatus = -1;
+			PerformTriangulation();
+			ProcessTSP();
+			//EndLloydIteration();
+		}
+		else
+		{
+			//std::cout << "iteration " << _currentIter << ", displacement " << _displacement << "\n";
+		}
+
+	}
+}
+
 void GLWidget::paintGL()
 {
-    if(_iterStatus == 0)
-    {
-        InitLloydIteration();
-        _currentIter = 0;
-        _iterStatus = 1;
-    }
-
-    if(_iterStatus == 1)
-    {
-        NextLloydIteration();
-        _currentIter++;
-
-        if(_currentIter >= SystemParams::max_iter || _displacement < std::numeric_limits<int>::epsilon())
-        {
-            _iterStatus = -1;
-            PerformTriangulation();
-            ProcessTSP();
-            //EndLloydIteration();
-        }
-        else
-        {
-            std::cout << "iteration " << _currentIter << ", displacement " << _displacement << "\n";
-        }
-
-    }
+    
 
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
@@ -611,13 +617,17 @@ void GLWidget::LloydIteration()
 
 void GLWidget::InitLloydIteration()
 {
+	std::cout << "======= InitLloydIteration() started\n";
+	std::cout << "SystemParams::num_stipples " << SystemParams::num_stipples << "\n";
+
     // calculate random sampling
     _centroids.clear();
     _centroids = _rSampling->GeneratePoints(GetGrayValues(), SystemParams::num_stipples, _img_width, _img_height);
+	std::cout << "InitLloydIteration() Points generated\n";
     _prevCentroids = std::vector<MyPoint>(_centroids.size());
     _centroidsArea = std::vector<float>(_centroids.size());
     _centroidColors = std::vector<QColor>(_centroids.size());
-    std::cout << "# centroid is " << _centroids.size() << "\n";
+    std::cout << "InitLloydIteration() # centroid is " << _centroids.size() << "\n";
 
     //fixme: rounding error?
     for(size_t a = 0; a < _centroids.size(); a++)
@@ -640,6 +650,8 @@ void GLWidget::InitLloydIteration()
 
     // generate index colors
     GenerateConeColors();
+
+	std::cout << "======= InitLloydIteration() done\n";
 
     //_iterTimer->setInterval(1);
     //_currentIter = 0;
@@ -1030,11 +1042,11 @@ void GLWidget::SaveToSvg()
 void GLWidget::GenerateConeColors()
 {
     // generate random color
-    std::vector<int> rVector(255);
-    std::vector<int> gVector(255);
-    std::vector<int> bVector(255);
+    std::vector<int> rVector(256);
+    std::vector<int> gVector(256);
+    std::vector<int> bVector(256);
 
-    for(size_t a = 0; a < 255; a++)
+    for(size_t a = 0; a < 256; a++)
     {
         rVector[a] = a;
         gVector[a] = a;

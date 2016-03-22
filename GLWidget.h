@@ -78,6 +78,8 @@ private:
 
 public:
 
+	void OneStepLloydIteration();
+
     // constructor
     GLWidget( QGLFormat format, QWidget *parent = 0);
     // destructor
@@ -172,6 +174,7 @@ private:
     //QTimer* _iterTimer;
     void InitLloydIteration();
     void EndLloydIteration();
+	
 
 private slots:
     void NextLloydIteration();

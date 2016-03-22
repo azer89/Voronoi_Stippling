@@ -30,6 +30,8 @@ std::vector<MyPoint> RejectionSampling::GeneratePoints(std::vector<float> grayVa
 
     sampler<T> sample(keys, grayValues);
 
+	std::cout << "Sampler generated\n";
+
     std::map<T, size_t> hist;
     for (size_t n = 0; n < numPt; ++n)
     {
@@ -37,7 +39,10 @@ std::vector<MyPoint> RejectionSampling::GeneratePoints(std::vector<float> grayVa
         hist[num]++;
     }
 
+	std::cout << "Histogram generated\n";
+
     std::vector<PixelData> data;
+	data.clear();
     for (auto i: hist)
     {
         data.push_back(PixelData(i.first, i.second));
@@ -48,11 +53,19 @@ std::vector<MyPoint> RejectionSampling::GeneratePoints(std::vector<float> grayVa
 
     // fix me
     sort(data.begin(), data.end(), PixelData::sortByValue);
-    for(size_t a = 0; a < numPt; a++)
+	for (size_t a = 0; a < data.size(); a++)
     {
         int key = data[a].key;
+		if (key >= grayValues.size())
+		{
+			continue;
+		}
+
         //float val = data[a].value;
         float val = grayValues[key];
+
+		
+
         int xIndex = key % img_width;
         int yIndex = key / img_width;
         if(val > 0.25) // fix me
