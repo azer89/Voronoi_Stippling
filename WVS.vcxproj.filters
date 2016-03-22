@@ -74,6 +74,9 @@
     <ClCompile Include="SystemParams.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="GLContainer.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <CustomBuild Include="wvs_main_window.h">

@@ -27,6 +27,7 @@ public:
 
 //bool sortByValue(const PixelData &data1, const PixelData &data2) { return data1.value > data2.value; }
 
+// http://stackoverflow.com/questions/22975359/how-to-optimize-rejection-sampling
 template <typename T>
 class sampler
 {
@@ -34,8 +35,29 @@ class sampler
     std::discrete_distribution<T> distr;
 
 public:
-    sampler(const std::vector<T>& keys, const std::vector<float>& prob) :
-        keys(keys), distr(prob.begin(), prob.end()) { }
+	// this only works for visual c++
+	sampler(const std::vector<T>& keys, const std::vector<float>& prob)
+	{
+		this->keys = keys;
+
+		std::size_t i = 0;
+		this->distr = std::discrete_distribution<>(prob.size(),
+			0, // smaller value
+			1, // bigger value
+			[&prob, &i](float) // reference i by address
+		{
+			auto w = prob[i];
+			++i;
+			return w;
+		});
+
+	}
+
+	/*
+	// If you use g++
+	sampler(const std::vector<T>& keys, const std::vector<float>& prob) :
+	keys(keys), distr(prob.begin(), prob.end()) { }
+	*/
 
     T generateRandom()
     {

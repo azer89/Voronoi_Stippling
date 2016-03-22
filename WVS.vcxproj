@@ -100,6 +100,7 @@
     <ClCompile Include="GeneratedFiles\Release\moc_wvs_main_window.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
     </ClCompile>
+    <ClCompile Include="GLContainer.cpp" />
     <ClCompile Include="GLWidget.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="RejectionSampling.cpp" />
