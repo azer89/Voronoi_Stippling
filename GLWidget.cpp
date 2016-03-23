@@ -337,6 +337,7 @@ void GLWidget::OneStepLloydIteration()
 		NextLloydIteration();
 		_currentIter++;
 
+		// this is stop
 		if (_currentIter >= SystemParams::max_iter || _displacement < std::numeric_limits<int>::epsilon())
 		{
 			_iterStatus = -1;
@@ -664,12 +665,6 @@ void GLWidget::NextLloydIteration()
     SaveToBitmap();
     UpdateCentroids();
     PrepareCentroids();
-    //_currentIter++;
-    //if(_currentIter >= SystemParams::max_iter)
-    //{
-        //_iterTimer->stop();
-    //    EndLloydIteration();
-    //}
 }
 
 
@@ -766,9 +761,10 @@ void GLWidget::UpdateCentroids()
 
         _centroidsArea[a] = mArray[a];
 
-        _centroidColors[a] = QColor(rArray[a] / areaArray[a],
-                                    gArray[a] / areaArray[a],
-                                    bArray[a] / areaArray[a]);
+		// think this is only for debugging
+        //_centroidColors[a] = QColor(rArray[a] / areaArray[a],
+        //                            gArray[a] / areaArray[a],
+        //                            bArray[a] / areaArray[a]);
 
         }
     }
