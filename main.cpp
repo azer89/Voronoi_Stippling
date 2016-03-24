@@ -2,6 +2,12 @@
 #include <QApplication>
 #include <QStyleFactory>
 
+/*
+* Reza Adhitya Saputra
+* reza.adhitya.saputra@gmail.com
+*
+*/
+
 int main(int argc, char *argv[])
 {
     //system("./concorde d493.tsp");

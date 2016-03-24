@@ -1,4 +1,9 @@
 
+/*
+* Reza Adhitya Saputra
+* reza.adhitya.saputra@gmail.com
+*
+*/
 
 #include "stdafx.h"
 

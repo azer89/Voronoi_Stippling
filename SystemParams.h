@@ -1,6 +1,12 @@
 #ifndef SYSTEMPARAMS_H
 #define SYSTEMPARAMS_H
 
+/*
+* Reza Adhitya Saputra
+* reza.adhitya.saputra@gmail.com
+*
+*/
+
 class SystemParams
 {
 public:

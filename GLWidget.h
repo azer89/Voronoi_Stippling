@@ -1,6 +1,12 @@
 #ifndef GLWIDGET_H
 #define GLWIDGET_H
 
+/*
+* Reza Adhitya Saputra
+* radhitya@uwaterloo.ca
+*
+*/
+
 #include "stdafx.h"
 #include "MyPoint.h"
 #include "MyLine.h"

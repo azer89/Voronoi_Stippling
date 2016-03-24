@@ -1,6 +1,12 @@
 #ifndef MYPOINT_H
 #define MYPOINT_H
 
+/*
+* Reza Adhitya Saputra
+* reza.adhitya.saputra@gmail.com
+*
+*/
+
 struct MyPoint
 {
 public:

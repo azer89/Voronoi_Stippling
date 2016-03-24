@@ -1,6 +1,12 @@
 
 #include "RejectionSampling.h"
 
+/*
+* Reza Adhitya Saputra
+* reza.adhitya.saputra@gmail.com
+*
+*/
+
 
 RejectionSampling::RejectionSampling()
 {

@@ -1,6 +1,12 @@
 #ifndef REJECTIONSAMPLING_H
 #define REJECTIONSAMPLING_H
 
+/*
+* Reza Adhitya Saputra
+* reza.adhitya.saputra@gmail.com
+*
+*/
+
 #include "stdafx.h"
 #include "MyPoint.h"
 

@@ -8,6 +8,12 @@
 #include <string>
 #include <iomanip>
 
+/*
+* Reza Adhitya Saputra
+* reza.adhitya.saputra@gmail.com
+*
+*/
+
 #define M_PI 3.14159265359
 //#define _USE_MATH_DEFINES
 //#include <cmath> 

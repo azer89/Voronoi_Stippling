@@ -1,5 +1,11 @@
 #pragma once
 
+/*
+* Reza Adhitya Saputra
+* reza.adhitya.saputra@gmail.com
+*
+*/
+
 #define GL_GLEXT_PROTOTYPES
 
 // Qt OpenGL

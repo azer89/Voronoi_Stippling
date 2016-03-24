@@ -1,6 +1,12 @@
 #ifndef WVS_MAIN_WINDOW_H
 #define WVS_MAIN_WINDOW_H
 
+/*
+* Reza Adhitya Saputra
+* reza.adhitya.saputra@gmail.com
+*
+*/
+
 #include <QMainWindow>
 
 namespace Ui {

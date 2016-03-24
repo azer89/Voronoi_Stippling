@@ -1,6 +1,12 @@
 #ifndef GLCONTAINER_H
 #define GLCONTAINER_H
 
+/*
+* Reza Adhitya Saputra
+* radhitya@uwaterloo.ca
+*
+*/
+
 #include "stdafx.h"
 #include "GLWidget.h"
 
