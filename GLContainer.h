@@ -3,7 +3,7 @@
 
 /*
 * Reza Adhitya Saputra
-* radhitya@uwaterloo.ca
+* reza.adhitya.saputra@gmail.com
 *
 */
 

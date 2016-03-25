@@ -3,7 +3,7 @@
 
 /*
 * Reza Adhitya Saputra
-* radhitya@uwaterloo.ca
+* reza.adhitya.saputra@gmail.com
 *
 */
 
@@ -12,7 +12,7 @@
 #include "MyLine.h"
 #include "RejectionSampling.h"
 #include "MyIndexedLine.h"
-//#include "TSPIO.h"
+//#include "TSPIO.h" // why this is commented
 
 class GLWidget : public QGLWidget
 {
