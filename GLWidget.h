@@ -40,8 +40,6 @@ private:
     // cones
     QOpenGLBuffer _conesVbo;
     QOpenGLVertexArrayObject _conesVao;
-    //int _coneSlice;
-    //int _verticesPerCone; // _coneSlice + 2
 
     // for rendering
     int _mvpMatrixLocation;
@@ -56,20 +54,18 @@ private:
     // original image
     QImage _imgOriginal;
     QImage _imgColor;
+
     // a buffer for lloyd's method
     QImage _imageBuffer;
-    //QImage _imgGL;
-    //GLuint _imgID;
 
     // random sampling
-    //int _numSample;
     RejectionSampling* _rSampling;      // an instance that generates random sampling
     std::vector<MyPoint> _centroids ;   // centroids of voronoi cells
     std::vector<float>   _centroidsArea;
     std::vector<MyPoint> _prevCentroids ;
     std::vector<QColor> _centroidColors ;
+
     float _displacement;
-    //std::vector<float> _displacements;
     std::vector<QColor> _coneColors;    // this stores indices of centroids as colors
 
     std::vector<MyLine> _lines;
