@@ -1,7 +1,7 @@
 /********************************************************************************
 ** Form generated from reading UI file 'wvs_main_window.ui'
 **
-** Created by: Qt User Interface Compiler version 5.5.1
+** Created by: Qt User Interface Compiler version 5.5.0
 **
 ** WARNING! All changes made in this file will be lost when recompiling UI file!
 ********************************************************************************/
@@ -83,7 +83,7 @@ public:
         wvs_main_window->setCentralWidget(centralWidget);
         menuBar = new QMenuBar(wvs_main_window);
         menuBar->setObjectName(QStringLiteral("menuBar"));
-        menuBar->setGeometry(QRect(0, 0, 1200, 25));
+        menuBar->setGeometry(QRect(0, 0, 1200, 26));
         menuFile = new QMenu(menuBar);
         menuFile->setObjectName(QStringLiteral("menuFile"));
         wvs_main_window->setMenuBar(menuBar);
@@ -121,7 +121,7 @@ public:
         stipplesSB->setObjectName(QStringLiteral("stipplesSB"));
         stipplesSB->setMinimum(1);
         stipplesSB->setMaximum(100000);
-        stipplesSB->setValue(100);
+        stipplesSB->setValue(10000);
 
         formLayout->setWidget(2, QFormLayout::FieldRole, stipplesSB);
 

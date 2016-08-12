@@ -40,6 +40,8 @@ wvs_main_window::wvs_main_window(QWidget *parent) :
 
     //updateParametersButton
     connect(ui->updateParametersButton,      SIGNAL(pressed()),    this, SLOT(Recalculate()));
+
+	//LoadBitmapImage("C:/Users/azer/workspace/WVS/Input_Image/sanjuro.png");
 }
 
 wvs_main_window::~wvs_main_window()
@@ -157,11 +159,20 @@ void wvs_main_window::OpenFileAction()
     // Get Filename
     QString qFilename = QFileDialog::getOpenFileName(this, "/home/azer/Desktop/");
     if(qFilename.isEmpty()) return;
-    strFilename = qFilename.toStdString();
-    //std::cout << strFilename << "\n";
+    
+	LoadBitmapImage(qFilename.toStdString());
+	/*strFilename = qFilename.toStdString();
 
     imageLoaded = false;
-    ofTimer->start(0);						// Use timer to enable cursor override
+    ofTimer->start(0); // Use timer to enable cursor override*/
+}
+
+void wvs_main_window::LoadBitmapImage(std::string strFileName)
+{
+	strFilename = strFileName;
+
+	imageLoaded = false;
+	ofTimer->start(0); // Use timer to enable cursor override
 }
 
 void wvs_main_window::Recalculate()

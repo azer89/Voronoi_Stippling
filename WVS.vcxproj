@@ -45,34 +45,36 @@
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
       <PreprocessorDefinitions>UNICODE;WIN32;WIN64;QT_DLL;QT_CORE_LIB;QT_GUI_LIB;QT_WIDGETS_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>D:\Code\WVS;D:\Code\WVS\GeneratedFiles;C:\Qt\Qt5.5.1\5.5\msvc2013\include;C:\Qt\Qt5.5.1\5.5\msvc2013\include\QtCore;C:\Qt\Qt5.5.1\5.5\msvc2013\include\QtGui;C:\Qt\Qt5.5.1\5.5\msvc2013\include\QtWidgets;C:\Qt\Qt5.5.1\5.5\msvc2013\include\QtOpenGL;C:\Qt\Qt5.5.1\5.5\msvc2013\include\QtSvg;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>C:\Users\azer\workspace\WVS\WVS;C:\Users\azer\workspace\WVS\GeneratedFiles;C:\Qt\Qt5.5.0\5.5\msvc2013\include;C:\Qt\Qt5.5.0\5.5\msvc2013\include\QtCore;C:\Qt\Qt5.5.0\5.5\msvc2013\include\QtGui;C:\Qt\Qt5.5.0\5.5\msvc2013\include\QtWidgets;C:\Qt\Qt5.5.0\5.5\msvc2013\include\QtOpenGL;C:\Qt\Qt5.5.0\5.5\msvc2013\include\QtSvg;C:\Users\azer\workspace\CGAL-4.6.3\include;C:\Users\azer\workspace\CGAL-4.6.3\auxiliary\gmp\include;C:\Users\azer\workspace\CGAL-4.6.3\bin\include;C:\Users\azer\workspace\boost_1_59_0;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <Optimization>Disabled</Optimization>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
       <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
       <TreatWChar_tAsBuiltInType>true</TreatWChar_tAsBuiltInType>
+      <MultiProcessorCompilation>true</MultiProcessorCompilation>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
       <OutputFile>$(OutDir)\$(ProjectName).exe</OutputFile>
-      <AdditionalLibraryDirectories>C:\Qt\Qt5.5.1\5.5\msvc2013\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>C:\Qt\Qt5.5.0\5.5\msvc2013\lib;C:\Users\azer\workspace\CGAL-4.6.3\bin\lib;C:\Users\azer\workspace\CGAL-4.6.3\auxiliary\gmp\lib;C:\Users\azer\workspace\boost_1_59_0\lib32-msvc-12.0;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalDependencies>qtmaind.lib;Qt5Cored.lib;Qt5Guid.lib;Qt5OpenGLd.lib;opengl32.lib;glu32.lib;Qt5Svgd.lib;Qt5Widgetsd.lib;Qt5Xmld.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>qtmaind.lib;Qt5Cored.lib;Qt5Guid.lib;Qt5OpenGLd.lib;opengl32.lib;glu32.lib;Qt5Svgd.lib;Qt5Widgetsd.lib;Qt5Xmld.lib;libgmp-10.lib;libmpfr-4.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <ClCompile>
       <PreprocessorDefinitions>UNICODE;WIN32;WIN64;QT_DLL;QT_NO_DEBUG;NDEBUG;QT_CORE_LIB;QT_GUI_LIB;QT_WIDGETS_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>.\GeneratedFiles;.;$(QTDIR)\include;.\GeneratedFiles\$(ConfigurationName);$(QTDIR)\include\QtCore;$(QTDIR)\include\QtGui;$(QTDIR)\include\QtWidgets;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>C:\Users\azer\workspace\WVS\WVS;C:\Users\azer\workspace\WVS\GeneratedFiles;C:\Qt\Qt5.5.0\5.5\msvc2013\include;C:\Qt\Qt5.5.0\5.5\msvc2013\include\QtCore;C:\Qt\Qt5.5.0\5.5\msvc2013\include\QtGui;C:\Qt\Qt5.5.0\5.5\msvc2013\include\QtWidgets;C:\Qt\Qt5.5.0\5.5\msvc2013\include\QtOpenGL;C:\Qt\Qt5.5.0\5.5\msvc2013\include\QtSvg;C:\Users\azer\workspace\CGAL-4.8.1\include;C:\Users\azer\workspace\boost_1_61_0;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <DebugInformationFormat />
       <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
       <TreatWChar_tAsBuiltInType>true</TreatWChar_tAsBuiltInType>
+      <MultiProcessorCompilation>true</MultiProcessorCompilation>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
       <OutputFile>$(OutDir)\$(ProjectName).exe</OutputFile>
-      <AdditionalLibraryDirectories>$(QTDIR)\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>C:\Qt\Qt5.5.0\5.5\msvc2013\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <GenerateDebugInformation>false</GenerateDebugInformation>
-      <AdditionalDependencies>qtmain.lib;Qt5Core.lib;Qt5Gui.lib;Qt5Widgets.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>qtmain.lib;Qt5Core.lib;Qt5Gui.lib;Qt5OpenGL.lib;opengl32.lib;glu32.lib;Qt5Svg.lib;Qt5Widgets.lib;Qt5Xml.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
@@ -116,7 +118,7 @@
       <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(QTDIR)\bin\moc.exe;%(FullPath)</AdditionalInputs>
       <Message Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Moc%27ing wvs_main_window.h...</Message>
       <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">.\GeneratedFiles\$(ConfigurationName)\moc_%(Filename).cpp</Outputs>
-      <Command Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">"$(QTDIR)\bin\moc.exe"  "%(FullPath)" -o ".\GeneratedFiles\$(ConfigurationName)\moc_%(Filename).cpp"  -DUNICODE -DWIN32 -DWIN64 -DQT_DLL -DQT_CORE_LIB -DQT_GUI_LIB -DQT_WIDGETS_LIB "-I.\GeneratedFiles" "-I." "-I$(QTDIR)\include" "-I.\GeneratedFiles\$(ConfigurationName)\." "-I$(QTDIR)\include\QtCore" "-I$(QTDIR)\include\QtGui" "-I$(QTDIR)\include\QtWidgets"</Command>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">"$(QTDIR)\bin\moc.exe"  "%(FullPath)" -o ".\GeneratedFiles\$(ConfigurationName)\moc_%(Filename).cpp"  -DUNICODE -DWIN32 -DWIN64 -DQT_DLL -DQT_CORE_LIB -DQT_GUI_LIB -DQT_WIDGETS_LIB  "-IC:\Users\azer\workspace\WVS\WVS" "-IC:\Users\azer\workspace\WVS\GeneratedFiles" "-IC:\Qt\Qt5.5.1\5.5\msvc2013\include" "-IC:\Qt\Qt5.5.1\5.5\msvc2013\include\QtCore" "-IC:\Qt\Qt5.5.1\5.5\msvc2013\include\QtGui" "-IC:\Qt\Qt5.5.1\5.5\msvc2013\include\QtWidgets" "-IC:\Qt\Qt5.5.1\5.5\msvc2013\include\QtOpenGL" "-IC:\Qt\Qt5.5.1\5.5\msvc2013\include\QtSvg"</Command>
       <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(QTDIR)\bin\moc.exe;%(FullPath)</AdditionalInputs>
       <Message Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Moc%27ing wvs_main_window.h...</Message>
       <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">.\GeneratedFiles\$(ConfigurationName)\moc_%(Filename).cpp</Outputs>
@@ -147,7 +149,7 @@
       <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(QTDIR)\bin\moc.exe;%(FullPath)</AdditionalInputs>
       <Message Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Moc%27ing GLWidget.h...</Message>
       <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">.\GeneratedFiles\$(ConfigurationName)\moc_%(Filename).cpp</Outputs>
-      <Command Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">"$(QTDIR)\bin\moc.exe"  "%(FullPath)" -o ".\GeneratedFiles\$(ConfigurationName)\moc_%(Filename).cpp"  -DUNICODE -DWIN32 -DWIN64 -DQT_DLL -DQT_CORE_LIB -DQT_GUI_LIB -DQT_WIDGETS_LIB "-ID:\Code\WVS" "-ID:\Code\WVS\GeneratedFiles" "-IC:\Qt\Qt5.5.1\5.5\msvc2013\include" "-IC:\Qt\Qt5.5.1\5.5\msvc2013\include\QtCore" "-IC:\Qt\Qt5.5.1\5.5\msvc2013\include\QtGui" "-IC:\Qt\Qt5.5.1\5.5\msvc2013\include\QtWidgets" "-IC:\Qt\Qt5.5.1\5.5\msvc2013\include\QtOpenGL" "-IC:\Qt\Qt5.5.1\5.5\msvc2013\include\QtSvg"</Command>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">"$(QTDIR)\bin\moc.exe"  "%(FullPath)" -o ".\GeneratedFiles\$(ConfigurationName)\moc_%(Filename).cpp"  -DUNICODE -DWIN32 -DWIN64 -DQT_DLL -DQT_CORE_LIB -DQT_GUI_LIB -DQT_WIDGETS_LIB  "-IC:\Users\azer\workspace\WVS\WVS" "-IC:\Users\azer\workspace\WVS\GeneratedFiles" "-IC:\Qt\Qt5.5.1\5.5\msvc2013\include" "-IC:\Qt\Qt5.5.1\5.5\msvc2013\include\QtCore" "-IC:\Qt\Qt5.5.1\5.5\msvc2013\include\QtGui" "-IC:\Qt\Qt5.5.1\5.5\msvc2013\include\QtWidgets" "-IC:\Qt\Qt5.5.1\5.5\msvc2013\include\QtOpenGL" "-IC:\Qt\Qt5.5.1\5.5\msvc2013\include\QtSvg"</Command>
       <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(QTDIR)\bin\moc.exe;%(FullPath)</AdditionalInputs>
       <Message Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Moc%27ing GLWidget.h...</Message>
       <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">.\GeneratedFiles\$(ConfigurationName)\moc_%(Filename).cpp</Outputs>
@@ -157,7 +159,7 @@
       <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(QTDIR)\bin\moc.exe;%(FullPath)</AdditionalInputs>
       <Message Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Moc%27ing GLContainer.h...</Message>
       <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">.\GeneratedFiles\$(ConfigurationName)\moc_%(Filename).cpp</Outputs>
-      <Command Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">"$(QTDIR)\bin\moc.exe"  "%(FullPath)" -o ".\GeneratedFiles\$(ConfigurationName)\moc_%(Filename).cpp"  -DUNICODE -DWIN32 -DWIN64 -DQT_DLL -DQT_CORE_LIB -DQT_GUI_LIB -DQT_WIDGETS_LIB "-ID:\Code\WVS" "-ID:\Code\WVS\GeneratedFiles" "-IC:\Qt\Qt5.5.1\5.5\msvc2013\include" "-IC:\Qt\Qt5.5.1\5.5\msvc2013\include\QtCore" "-IC:\Qt\Qt5.5.1\5.5\msvc2013\include\QtGui" "-IC:\Qt\Qt5.5.1\5.5\msvc2013\include\QtWidgets" "-IC:\Qt\Qt5.5.1\5.5\msvc2013\include\QtOpenGL" "-IC:\Qt\Qt5.5.1\5.5\msvc2013\include\QtSvg"</Command>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">"$(QTDIR)\bin\moc.exe"  "%(FullPath)" -o ".\GeneratedFiles\$(ConfigurationName)\moc_%(Filename).cpp"  -DUNICODE -DWIN32 -DWIN64 -DQT_DLL -DQT_CORE_LIB -DQT_GUI_LIB -DQT_WIDGETS_LIB  "-IC:\Users\azer\workspace\WVS\WVS" "-IC:\Users\azer\workspace\WVS\GeneratedFiles" "-IC:\Qt\Qt5.5.1\5.5\msvc2013\include" "-IC:\Qt\Qt5.5.1\5.5\msvc2013\include\QtCore" "-IC:\Qt\Qt5.5.1\5.5\msvc2013\include\QtGui" "-IC:\Qt\Qt5.5.1\5.5\msvc2013\include\QtWidgets" "-IC:\Qt\Qt5.5.1\5.5\msvc2013\include\QtOpenGL" "-IC:\Qt\Qt5.5.1\5.5\msvc2013\include\QtSvg"</Command>
       <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(QTDIR)\bin\moc.exe;%(FullPath)</AdditionalInputs>
       <Message Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Moc%27ing GLContainer.h...</Message>
       <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">.\GeneratedFiles\$(ConfigurationName)\moc_%(Filename).cpp</Outputs>
@@ -181,7 +183,7 @@
   </ImportGroup>
   <ProjectExtensions>
     <VisualStudio>
-      <UserProperties MocDir=".\GeneratedFiles\$(ConfigurationName)" UicDir=".\GeneratedFiles" RccDir=".\GeneratedFiles" lupdateOptions="" lupdateOnBuild="0" lreleaseOptions="" Qt5Version_x0020_Win32="msvc2013" MocOptions="" />
+      <UserProperties MocDir=".\GeneratedFiles\$(ConfigurationName)" UicDir=".\GeneratedFiles" RccDir=".\GeneratedFiles" lupdateOptions="" lupdateOnBuild="0" lreleaseOptions="" Qt5Version_x0020_Win32="QT55" MocOptions="" />
     </VisualStudio>
   </ProjectExtensions>
 </Project>

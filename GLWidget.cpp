@@ -19,16 +19,17 @@
 //#include <cmath> 
 
 // Uncomment these if you want CGAL
-/*
+
 #include <CGAL/Exact_predicates_inexact_constructions_kernel.h>
 #include <CGAL/Projection_traits_xy_3.h>
 #include <CGAL/Delaunay_triangulation_2.h>
 #include <fstream>
+
 typedef CGAL::Exact_predicates_inexact_constructions_kernel K;
 typedef CGAL::Projection_traits_xy_3<K>  Gt;
 typedef CGAL::Delaunay_triangulation_2<Gt> Delaunay;
 typedef K::Point_3   Point;
-*/
+
 
 std::vector<std::string>& my_split_str(const std::string &s, char delim, std::vector<std::string> &elems)
 {
@@ -682,7 +683,8 @@ void GLWidget::EndLloydIteration()
 
 void GLWidget::PerformTriangulation()
 {
-	/*
+	std::cout << "PerformTriangulation\n";
+
     std::vector <Point> points;
     for(size_t a = 0; a < _centroids.size(); a++)
     {
@@ -700,7 +702,6 @@ void GLWidget::PerformTriangulation()
 
         _lines.push_back(MyLine(p0.x(), p0.y(), p1.x(), p1.y()));
     }
-	*/
 }
 
 
@@ -992,12 +993,13 @@ void GLWidget::SaveToSvg()
 
     // draw
     painter.setClipRect(QRect(0, 0, _img_width, _img_height));
-    /*
+    
+
     painter.setPen(Qt::NoPen);
 
     painter.setBrush(QBrush(Qt::black, Qt::SolidPattern));
 
-    for(size_t a = 0; a < _centroids.size(); a++)
+    /*for(size_t a = 0; a < _centroids.size(); a++)
     {
         QColor col = _centroidColors[a];
 
@@ -1011,15 +1013,14 @@ void GLWidget::SaveToSvg()
 
 
     // triangle art
-    /*painter.setPen(QPen(Qt::black, 0.5));
+    painter.setPen(QPen(Qt::black, 0.5));
     for(size_t a = 0; a < _lines.size(); a++)
     {
         MyLine aLine = _lines[a];
         painter.drawLine(aLine.XA, aLine.YA, aLine.XB, aLine.YB);
     }
-    */
 
-    painter.setPen(QPen(Qt::black, 1.0));
+    /*painter.setPen(QPen(Qt::black, 1.0));
     std::cout << "tsp size: " << _tspPath.size() << "\n";
     for(size_t a = 0; a < _tspPath.size(); a++)
     {
@@ -1035,7 +1036,7 @@ void GLWidget::SaveToSvg()
             endPt = _centroids[_tspPath[a + 1]];
         }
         painter.drawLine(startPt.x, startPt.y, endPt.x, endPt.y);
-    }
+    }*/
 
     painter.end();
 }

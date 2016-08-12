@@ -44,5 +44,7 @@ private slots:
 
     void Recalculate();
 
+	void LoadBitmapImage(std::string strFileName);
+
 };
 #endif // WVS_MAIN_WINDOW_H
