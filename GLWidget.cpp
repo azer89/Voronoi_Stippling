@@ -20,16 +20,96 @@
 
 // Uncomment these if you want CGAL
 
+// ===== 1 =====
 #include <CGAL/Exact_predicates_inexact_constructions_kernel.h>
 #include <CGAL/Projection_traits_xy_3.h>
 #include <CGAL/Delaunay_triangulation_2.h>
 #include <fstream>
 
+
+// ===== 1 =====
 typedef CGAL::Exact_predicates_inexact_constructions_kernel K;
 typedef CGAL::Projection_traits_xy_3<K>  Gt;
 typedef CGAL::Delaunay_triangulation_2<Gt> Delaunay;
 typedef K::Point_3   Point;
 
+// ===== 2 =====
+/*#include <CGAL/Exact_predicates_inexact_constructions_kernel.h>
+#include <CGAL/Constrained_Delaunay_triangulation_2.h>
+#include <CGAL/Triangulation_conformer_2.h>*/
+
+// ===== 2 =====
+/*typedef CGAL::Exact_predicates_inexact_constructions_kernel K;
+typedef CGAL::Constrained_Delaunay_triangulation_2<K> CDT;
+typedef CDT::Point Point;
+typedef CDT::Vertex_handle Vertex_handle;*/
+
+// ===== 3 =====
+/*#include <CGAL/Exact_predicates_inexact_constructions_kernel.h>
+#include <CGAL/Constrained_Delaunay_triangulation_2.h>
+#include <CGAL/Delaunay_mesher_2.h>
+#include <CGAL/Delaunay_mesh_face_base_2.h>
+#include <CGAL/Delaunay_mesh_size_criteria_2.h>*/
+
+// ===== 3 =====
+/*typedef CGAL::Exact_predicates_inexact_constructions_kernel K;
+typedef CGAL::Triangulation_vertex_base_2<K> Vb;
+typedef CGAL::Delaunay_mesh_face_base_2<K> Fb;
+typedef CGAL::Triangulation_data_structure_2<Vb, Fb> Tds;
+typedef CGAL::Constrained_Delaunay_triangulation_2<K, Tds> CDT;
+typedef CGAL::Delaunay_mesh_size_criteria_2<CDT> Criteria;
+
+typedef CDT::Vertex_handle Vertex_handle;
+typedef CDT::Point Point;*/
+
+void GLWidget::PerformTriangulation()
+{
+	// clear
+	_lines.clear();
+
+	std::cout << "PerformTriangulation\n";
+
+	std::vector <Point> points;
+	for (size_t a = 0; a < _centroids.size(); a++)
+	{
+		points.push_back(Point(_centroids[a].x, _centroids[a].y, 0));
+	}
+
+	Delaunay dt(points.begin(), points.end());
+	_lines.clear();
+	Delaunay::Finite_edges_iterator fiter = dt.finite_edges_begin();
+	for (; fiter != dt.finite_edges_end(); fiter++)
+	{
+		Delaunay::Segment seg = dt.segment(*fiter);
+		Delaunay::Point p0 = seg.point(0);
+		Delaunay::Point p1 = seg.point(1);
+
+		_lines.push_back(MyLine(p0.x(), p0.y(), p1.x(), p1.y()));
+	}
+
+	/*CDT cdt;
+
+	for (size_t a = 0; a < _centroids.size(); a++)
+	{
+		cdt.insert(Point(_centroids[a].x, _centroids[a].y));
+	}
+
+	// Vertex_handle va;
+
+	//CGAL::make_conforming_Delaunay_2(cdt); // 2
+	//CGAL::refine_Delaunay_mesh_2(cdt, Criteria(0.125, 0.5));
+	CGAL::refine_Delaunay_mesh_2(cdt, Criteria(0.125, 0.8));
+
+	CDT::Finite_edges_iterator fiter = cdt.finite_edges_begin();
+	for (; fiter != cdt.finite_edges_end(); fiter++)
+	{
+		CDT::Segment seg = cdt.segment(*fiter);
+		CDT::Point p0 = seg.point(0);
+		CDT::Point p1 = seg.point(1);
+
+		_lines.push_back(MyLine(p0.x(), p0.y(), p1.x(), p1.y()));
+	}*/
+}
 
 std::vector<std::string>& my_split_str(const std::string &s, char delim, std::vector<std::string> &elems)
 {
@@ -681,28 +761,7 @@ void GLWidget::EndLloydIteration()
     PrepareCentroids();
 }
 
-void GLWidget::PerformTriangulation()
-{
-	std::cout << "PerformTriangulation\n";
 
-    std::vector <Point> points;
-    for(size_t a = 0; a < _centroids.size(); a++)
-    {
-        points.push_back(Point(_centroids[a].x, _centroids[a].y, 0));
-    }
-
-    Delaunay dt(points.begin(), points.end());
-    _lines.clear();
-    Delaunay::Finite_edges_iterator fiter = dt.finite_edges_begin();
-    for(; fiter != dt.finite_edges_end(); fiter++)
-    {
-        Delaunay::Segment seg = dt.segment( *fiter );
-        Delaunay::Point p0 = seg.point(0);
-        Delaunay::Point p1 = seg.point(1);
-
-        _lines.push_back(MyLine(p0.x(), p0.y(), p1.x(), p1.y()));
-    }
-}
 
 
 void GLWidget::UpdateCentroids()
