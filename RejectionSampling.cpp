@@ -77,7 +77,9 @@ std::vector<MyPoint> RejectionSampling::GeneratePoints(std::vector<float> grayVa
 
         int xIndex = key % img_width;
         int yIndex = key / img_width;
-        if(val > 0.25) // fix me
+
+		// val is the gray value, 0 = black, 1 = white
+        if(val > 0.25) // fix me, I have a problem of too noisy points in the white area
         {
             randomPoints.push_back( MyPoint(xIndex, yIndex) );
         }
