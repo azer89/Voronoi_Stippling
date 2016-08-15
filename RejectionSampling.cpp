@@ -16,10 +16,24 @@ RejectionSampling::~RejectionSampling()
 {
 }
 
+float DistanceToOthers(std::vector<MyPoint> points, MyPoint pt)
+{
+	float dist = std::numeric_limits<float>::max();
+	for (int a = 0; a < points.size(); a++)
+	{
+		float d = pt.Distance(points[a]);
+		if (d < dist)
+		{
+			dist = d;
+		}
+	}
+	return dist;
+}
+
 //bool sortByValue(const PixelData &data1, const PixelData &data2) { return data1.value > data2.value; }
 
 // gray values should be [0.0, 1.0]
-std::vector<MyPoint> RejectionSampling::GeneratePoints(std::vector<float> grayValues, int numPt, int img_width, int img_height)
+std::vector<MyPoint> RejectionSampling::GeneratePoints(std::vector<float> grayValues, std::vector<int> alphaValues, int numPt, int img_width, int img_height)
 {
     std::vector<MyPoint> randomPoints;
 
@@ -28,6 +42,7 @@ std::vector<MyPoint> RejectionSampling::GeneratePoints(std::vector<float> grayVa
     // input
     std::vector<int> keys;
 
+	// exponentiation
 	for (size_t a = 0; a < grayValues.size(); a++)
 	{
 		grayValues[a] = std::exp(grayValues[a] * 5.0f);
@@ -73,13 +88,17 @@ std::vector<MyPoint> RejectionSampling::GeneratePoints(std::vector<float> grayVa
 		}
 
         //float val = data[a].value;
-        float val = grayValues[key];		
+        float val = grayValues[key];	
+
+		int aVal = alphaValues[key];
 
         int xIndex = key % img_width;
         int yIndex = key / img_width;
 
 		// val is the gray value, 0 = black, 1 = white
-        if(val > 0.25) // fix me, I have a problem of too noisy points in the white area
+		if (val > 0.25 && 
+			aVal > 0 &&
+			DistanceToOthers(randomPoints, MyPoint(xIndex, yIndex)) > 2.0f) // fix me, I have a problem of too noisy points in the white area
         {
             randomPoints.push_back( MyPoint(xIndex, yIndex) );
         }

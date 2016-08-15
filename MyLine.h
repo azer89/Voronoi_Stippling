@@ -44,6 +44,13 @@
             this->XB = pt2.x;	this->YB = pt2.y;
         }
 
+		MyPoint GetMiddlePoint()
+		{
+			MyPoint startPt(XA, YA);
+			MyPoint endPt(XB, YB);
+			return startPt + (endPt - startPt) * 0.5f;
+		}
+
 
         MyLine Resize(double val)
         {

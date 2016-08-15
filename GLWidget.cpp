@@ -64,6 +64,8 @@ typedef CDT::Point Point;*/
 
 void GLWidget::PerformTriangulation()
 {
+	//std::vector<float> grayValues = GetGrayValues();
+
 	// clear
 	_lines.clear();
 
@@ -84,7 +86,23 @@ void GLWidget::PerformTriangulation()
 		Delaunay::Point p0 = seg.point(0);
 		Delaunay::Point p1 = seg.point(1);
 
-		_lines.push_back(MyLine(p0.x(), p0.y(), p1.x(), p1.y()));
+		MyLine ln(p0.x(), p0.y(), p1.x(), p1.y());
+		MyPoint midPt = ln.GetMiddlePoint();
+
+		float val = qGray(_imgOriginal.pixel(midPt.x, midPt.y));
+		val /= 255.0f;
+
+		int alphaVal = qAlpha(_imgColor.pixel(midPt.x, midPt.y));
+
+		/*if (_imgColor.hasAlphaChannel())
+		{
+			std::cout << "fuck off!!!";
+		}*/
+
+		if (alphaVal > 0)
+		{
+			_lines.push_back(ln);
+		}
 	}
 
 	/*CDT cdt;
@@ -342,7 +360,7 @@ void GLWidget::PaintLine(MyPoint p1, MyPoint p2)
 
 void GLWidget::ProcessTSP()
 {
-	/*
+	
     // create a .tsp
     std::cout << "TSP\n";
     std::cout << "# points: " << _centroids.size() << "\n";
@@ -372,7 +390,8 @@ void GLWidget::ProcessTSP()
     f.close();
 
     // hack
-    system("./concorde -V nux.tsp");
+    //system("./concorde -V nux.tsp");
+	system("concorde -V nux.tsp");
     std::cout << "TSP DONE !!!\n";
     //system("chmod 777 nux.sol");
 
@@ -406,7 +425,7 @@ void GLWidget::ProcessTSP()
         }
     }
     myfile.close();
-	*/
+	
 }
 
 void GLWidget::OneStepLloydIteration()
@@ -500,6 +519,20 @@ void GLWidget::paintGL()
     //    this->repaint();
     //}
 
+}
+
+std::vector<int> GLWidget::GetAlphaValues()
+{
+	std::vector<int> alphaValues;
+	for (size_t a = 0; a < _img_height; a++)
+	{
+		for (size_t b = 0; b < _img_width; b++)
+		{
+			float val = qAlpha(_imgColor.pixel(b, a));
+			alphaValues.push_back(val);
+		}
+	}
+	return alphaValues;
 }
 
 std::vector<float> GLWidget::GetGrayValues()
@@ -710,7 +743,7 @@ void GLWidget::InitLloydIteration()
 
     // calculate random sampling
     _centroids.clear();
-    _centroids = _rSampling->GeneratePoints(GetGrayValues(), SystemParams::num_stipples, _img_width, _img_height);
+    _centroids = _rSampling->GeneratePoints(GetGrayValues(), GetAlphaValues(), SystemParams::num_stipples, _img_width, _img_height);
 	std::cout << "InitLloydIteration() Points generated\n";
     _prevCentroids = std::vector<MyPoint>(_centroids.size());
     _centroidsArea = std::vector<float>(_centroids.size());
@@ -865,9 +898,11 @@ void GLWidget::PrepareCentroids()
     {
         int xCenter = _centroids[a].x;
         int yCenter = _centroids[a].y;
-        //float radius = 1;
+        
+		
+		float radius = 3;
         //float radius = _centroidsArea[a] * 0.2 / 2.0;
-        float radius = 0.75 * sqrt(_centroidsArea[a] / M_PI);
+        //float radius = 0.75 * sqrt(_centroidsArea[a] / M_PI);
 
         QColor col(0, 0, 0);
         //QColor col = _centroidColors[a];
@@ -1071,7 +1106,7 @@ void GLWidget::SaveToSvg()
     }*/
 
 
-    // triangle art
+    // ==== triangle art ====
     painter.setPen(QPen(Qt::black, 0.5));
     for(size_t a = 0; a < _lines.size(); a++)
     {
@@ -1079,6 +1114,7 @@ void GLWidget::SaveToSvg()
         painter.drawLine(aLine.XA, aLine.YA, aLine.XB, aLine.YB);
     }
 
+	// ===== TSP =====
     /*painter.setPen(QPen(Qt::black, 1.0));
     std::cout << "tsp size: " << _tspPath.size() << "\n";
     for(size_t a = 0; a < _tspPath.size(); a++)

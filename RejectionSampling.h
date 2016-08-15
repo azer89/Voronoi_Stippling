@@ -79,7 +79,7 @@ public:
     RejectionSampling();
     ~RejectionSampling();
 
-    std::vector<MyPoint> GeneratePoints(std::vector<float> grayValues,  int numPt, int img_width, int img_height);
+	std::vector<MyPoint> GeneratePoints(std::vector<float> grayValues, std::vector<int> alphaValues, int numPt, int img_width, int img_height);
 };
 
 #endif // REJECTIONSAMPLING_H

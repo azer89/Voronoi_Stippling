@@ -165,6 +165,7 @@ private:
     //void ScaleWorld(float x, float y, float z);
 
     std::vector<float> GetGrayValues();
+	std::vector<int>   GetAlphaValues();
 
     void GenerateConeColors();
     int IndexFromColor(QColor col);
