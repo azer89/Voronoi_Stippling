@@ -1098,7 +1098,9 @@ void GLWidget::SaveToSvg()
         QColor col = _centroidColors[a];
 
 
+		//float radius = 5.0f;
         float radius = 0.75 * sqrt(_centroidsArea[a] / M_PI);
+		//float radius = 0.5 * sqrt(_centroidsArea[a] / M_PI);
         float diameter = radius * 2;
         int xPt = _centroids[a].x;
         int yPt = _centroids[a].y;
