@@ -1,5 +1,7 @@
 
-A project about Weighted Voronoi Stippling. Stippling is an artwork process in which dots are placed carefully to simulate the density of an image. This project is an implementation of Adrian Secord's Weighted Voronoi Stippling paper. As described in the paper, I implemented the stippling algorithm by using Voronoi diagrams and Lloyd's method.
+A project about Weighted Voronoi Stippling. 
+
+Stippling is a drawing in which dots are placed carefully to simulate the density of an image. This project is an implementation of Adrian Secord's Weighted Voronoi Stippling paper. As described in the paper, I implemented the stippling algorithm by implementing Lloyd's method to generate centroidal Voronoi diagrams.
 
 More info:
 
