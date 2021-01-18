@@ -4,12 +4,9 @@ A project about Weighted Voronoi Stippling.
 Stippling is a drawing in which dots are placed carefully to simulate the density of an image. This project is an implementation of Adrian Secord's Weighted Voronoi Stippling paper. As described in the paper, I implemented the stippling algorithm by implementing GPU-based Lloyd's method to generate centroidal Voronoi diagrams.
 
 
+Video demo: https://www.youtube.com/watch?v=SGw27SoViQM
 
-
-More info:
-
-https://cs.uwaterloo.ca/~radhitya/stippling/
-
+More info: https://cs.uwaterloo.ca/~radhitya/stippling/
 
 A Stippling Artwork of Here's Johnny:
 
