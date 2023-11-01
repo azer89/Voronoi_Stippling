@@ -3,11 +3,14 @@ Stippling is a drawing in which dots are placed carefully to simulate the densit
 
 Video demo: https://www.youtube.com/watch?v=SGw27SoViQM
 
-More info: https://cs.uwaterloo.ca/~radhitya/stippling/
+
+This is one example of a scene from the movie The Shining
 
 <img width="600" alt="image" src="https://raw.githubusercontent.com/azer89/WVS/master/johnny.png">
 
 </br>
+
+If you feed the points into a TSP solver, you get this weird design
 
 <img width="600" alt="image" src="https://raw.githubusercontent.com/azer89/WVS/master/2001_tsp.png">
 
