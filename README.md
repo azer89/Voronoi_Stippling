@@ -5,14 +5,10 @@ Video demo: https://www.youtube.com/watch?v=SGw27SoViQM
 
 More info: https://cs.uwaterloo.ca/~radhitya/stippling/
 
-The Shining:
+<img width="600" alt="image" src="https://raw.githubusercontent.com/azer89/WVS/master/johnny.png">
 
-![alt tag](https://raw.githubusercontent.com/azer89/WVS/master/johnny.png)
+</br>
 
-
-TSP Artwork of 2001: A Space Odyssey:
-
-![alt tag](https://raw.githubusercontent.com/azer89/WVS/master/2001_tsp.png)
-
+<img width="600" alt="image" src="https://raw.githubusercontent.com/azer89/WVS/master/2001_tsp.png">
 
 
