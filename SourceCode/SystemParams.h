@@ -10,14 +10,14 @@
 class SystemParams
 {
 public:
-    SystemParams();
-    ~SystemParams();
+	SystemParams();
+	~SystemParams();
 
 public:
-    static int num_stipples;
-    static int cone_slices;
-    static int cone_diameter;
-    static int max_iter;
+	static int num_stipples;
+	static int cone_slices;
+	static int cone_diameter;
+	static int max_iter;
 };
 
 #endif // SYSTEMPARAMS_H
