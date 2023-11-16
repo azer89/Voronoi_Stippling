@@ -6,12 +6,12 @@ Video demo: https://www.youtube.com/watch?v=SGw27SoViQM
 
 This is one example of a scene from the movie The Shining
 
-<img width="600" alt="image" src="https://raw.githubusercontent.com/azer89/WVS/master/johnny.png">
+<img width="600" alt="image" src="https://raw.githubusercontent.com/azer89/WVS/master/Output/johnny.png">
 
 </br>
 
 If you feed the points into a TSP solver, you get this weird design
 
-<img width="600" alt="image" src="https://raw.githubusercontent.com/azer89/WVS/master/2001_tsp.png">
+<img width="600" alt="image" src="https://raw.githubusercontent.com/azer89/WVS/master/Output/2001_tsp.png">
 
 
